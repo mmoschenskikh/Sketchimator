@@ -54,11 +54,12 @@ fun IconButton(
     contentDescription: String? = null,
 ) {
     androidx.compose.material3.IconButton(
-        modifier = modifier.size(ButtonDefaults.iconButtonSize(size)),
+        modifier = modifier,
         onClick = onClick,
         enabled = enabled,
     ) {
         Icon(
+            modifier = Modifier.size(ButtonDefaults.iconButtonSize(size)),
             painter = painter,
             tint = iconColor,
             contentDescription = contentDescription,

@@ -35,7 +35,7 @@ fun TopBar(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(DimenTokens.x2),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 IconButton(
                     icon = R.drawable.ic_curved_arrow_left_24,
@@ -51,7 +51,7 @@ fun TopBar(
                 )
             }
             Row(
-                horizontalArrangement = Arrangement.spacedBy(DimenTokens.x4),
+                horizontalArrangement = Arrangement.spacedBy(DimenTokens.x2),
             ) {
                 IconButton(
                     icon = R.drawable.ic_trash_32,
@@ -70,7 +70,7 @@ fun TopBar(
                 )
             }
             Row(
-                horizontalArrangement = Arrangement.spacedBy(DimenTokens.x4),
+                horizontalArrangement = Arrangement.spacedBy(DimenTokens.x2),
             ) {
                 IconButton(
                     icon = R.drawable.ic_pause_32,
