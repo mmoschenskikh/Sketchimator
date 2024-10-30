@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Canvas
@@ -15,6 +16,8 @@ import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,77 +55,123 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            var showFrameList by remember { mutableStateOf(false) }
+            val frames = remember { mutableListOf<Pair<List<Path>, List<Path>>>() }
             val paths = remember { mutableStateListOf<Path>() }
             val undonePaths = remember { mutableStateListOf<Path>() }
             SketchimatorTheme {
-                Scaffold(modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        TopBar(
-                            vm = TopBarVm(
-                                undoButtonEnabled = paths.isNotEmpty(),
-                                redoButtonEnabled = undonePaths.isNotEmpty(),
-                                removeFrameButtonEnabled = false,
-                                addNewFrameButtonEnabled = true,
-                                openFrameListButtonEnabled = true,
-                                pauseAnimationButtonEnabled = false,
-                                startAnimationButtonEnabled = true,
-                            ),
-                            listener = TopBarListener(
-                                onUndoActionClick = {
-                                    val undonePath = paths.removeAt(paths.lastIndex)
-                                    undonePaths.add(undonePath)
-                                },
-                                onRedoActionClick = {
-                                    val redonePath = undonePaths.removeAt(undonePaths.lastIndex)
-                                    paths.add(redonePath)
-                                },
-                                onRemoveFrameClick = {},
-                                onAddNewFrameClick = {},
-                                onOpenFrameListClick = {},
-                                onPauseAnimationClick = {},
-                                onStartAnimationClick = {},
-                            ),
-                            modifier = Modifier.padding(top = DimenTokens.x4, start = DimenTokens.x4, end = DimenTokens.x4),
-                        )
-                    },
-                    bottomBar = {
-                        BottomBar(
-                            listener = BottomBarListener(
-                                onPencilClicked = {},
-                                onBrushClicked = {},
-                                onEraserClicked = {},
-                                onShapesPaletteClicked = {},
-                                onColorPaletteClicked = {},
-                            ),
-                            modifier = Modifier.padding(start = DimenTokens.x4, end = DimenTokens.x4, bottom = DimenTokens.x4),
-                        )
-                    }
+                BackHandler(showFrameList) {
+                    showFrameList = false
+                }
 
-                ) { innerPadding ->
+                if (showFrameList) {
+
                     Surface {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(innerPadding)
-                        ) {
-                            Image(
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            items(frames + (paths to undonePaths)) { frame ->
+                                Box {
+                                    Image(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(SketchimatorTheme.shapes.extraLarge),
+                                        painter = painterResource(id = R.drawable.background),
+                                        contentScale = ContentScale.Crop,
+                                        contentDescription = null
+                                    )
+                                    Canvas(modifier = Modifier.fillMaxSize()) {
+                                        frame.first.forEach { path ->
+                                            drawPath(
+                                                path,
+                                                color = Color.Blue,
+                                                style = Stroke(width = 10f)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Scaffold(modifier = Modifier.fillMaxSize(),
+                        topBar = {
+                            TopBar(
+                                vm = TopBarVm(
+                                    undoButtonEnabled = paths.isNotEmpty(),
+                                    redoButtonEnabled = undonePaths.isNotEmpty(),
+                                    removeFrameButtonEnabled = frames.isNotEmpty(),
+                                    addNewFrameButtonEnabled = paths.isNotEmpty() || undonePaths.isNotEmpty(),
+                                    openFrameListButtonEnabled = frames.isNotEmpty() || paths.isNotEmpty() || undonePaths.isNotEmpty(),
+                                    pauseAnimationButtonEnabled = false,
+                                    startAnimationButtonEnabled = true,
+                                ),
+                                listener = TopBarListener(
+                                    onUndoActionClick = {
+                                        val undonePath = paths.removeAt(paths.lastIndex)
+                                        undonePaths.add(undonePath)
+                                    },
+                                    onRedoActionClick = {
+                                        val redonePath = undonePaths.removeAt(undonePaths.lastIndex)
+                                        paths.add(redonePath)
+                                    },
+                                    onRemoveFrameClick = {
+                                        val frame = frames.removeAt(frames.lastIndex)
+                                        paths.clear()
+
+                                        paths.addAll(frame.first)
+                                        undonePaths.clear()
+                                        undonePaths.addAll(frame.second)
+                                    },
+                                    onAddNewFrameClick = {
+                                        frames.add(paths.toList() to undonePaths.toList())
+                                        paths.clear()
+                                        undonePaths.clear()
+                                    },
+                                    onOpenFrameListClick = { showFrameList = true },
+                                    onPauseAnimationClick = {},
+                                    onStartAnimationClick = {},
+                                ),
+                                modifier = Modifier.padding(top = DimenTokens.x4, start = DimenTokens.x4, end = DimenTokens.x4),
+                            )
+                        },
+                        bottomBar = {
+                            BottomBar(
+                                listener = BottomBarListener(
+                                    onPencilClicked = {},
+                                    onBrushClicked = {},
+                                    onEraserClicked = {},
+                                    onShapesPaletteClicked = {},
+                                    onColorPaletteClicked = {},
+                                ),
+                                modifier = Modifier.padding(start = DimenTokens.x4, end = DimenTokens.x4, bottom = DimenTokens.x4),
+                            )
+                        }
+
+                    ) { innerPadding ->
+                        Surface {
+                            Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(DimenTokens.x4)
-                                    .clip(SketchimatorTheme.shapes.extraLarge),
-                                painter = painterResource(id = R.drawable.background),
-                                contentScale = ContentScale.Crop,
-                                contentDescription = null
-                            )
-                            WorkingArea(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(DimenTokens.x4)
-                                    .clip(SketchimatorTheme.shapes.extraLarge),
-                                paths = paths,
-                                onPathAdded = { paths.add(it) },
-                                onUndonePathsClear = { undonePaths.clear() },
-                            )
+                                    .padding(innerPadding)
+                            ) {
+                                Image(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(DimenTokens.x4)
+                                        .clip(SketchimatorTheme.shapes.extraLarge),
+                                    painter = painterResource(id = R.drawable.background),
+                                    contentScale = ContentScale.Crop,
+                                    contentDescription = null
+                                )
+                                WorkingArea(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(DimenTokens.x4)
+                                        .clip(SketchimatorTheme.shapes.extraLarge),
+                                    paths = paths,
+                                    onPathAdded = { paths.add(it) },
+                                    onUndonePathsClear = { undonePaths.clear() },
+                                )
+                            }
                         }
                     }
                 }
