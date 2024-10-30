@@ -9,8 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import ru.maxultra.sketchimator.R
+import ru.maxultra.sketchimator.ui.graphics.painter.OutlinedCircleColorPainter
 import ru.maxultra.sketchimator.ui.theme.SketchimatorTheme
 import ru.maxultra.sketchimator.ui.theme.tokens.DimenTokens
 import ru.maxultra.sketchimator.ui.util.DayNightPreview
@@ -29,13 +31,35 @@ fun IconButton(
     size: ButtonSize = ButtonSize.Medium,
     contentDescription: String? = null,
 ) {
+    IconButton(
+        painter = painterResource(icon),
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        iconColor = iconColor,
+        size = size,
+        contentDescription = contentDescription,
+    )
+}
+
+
+@Composable
+fun IconButton(
+    painter: Painter,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    iconColor: Color = Color.Unspecified,
+    size: ButtonSize = ButtonSize.Medium,
+    contentDescription: String? = null,
+) {
     androidx.compose.material3.IconButton(
         modifier = modifier.size(ButtonDefaults.iconButtonSize(size)),
         onClick = onClick,
         enabled = enabled,
     ) {
         Icon(
-            painter = painterResource(icon),
+            painter = painter,
             tint = iconColor,
             contentDescription = contentDescription,
         )
@@ -71,6 +95,10 @@ private fun IconButtonPreview() {
                 onClick = {},
                 size = ButtonSize.Medium,
                 enabled = false,
+            )
+            IconButton(
+                painter = OutlinedCircleColorPainter(Color.Blue, SketchimatorTheme.colorScheme.highlight),
+                onClick = {},
             )
         }
     }
