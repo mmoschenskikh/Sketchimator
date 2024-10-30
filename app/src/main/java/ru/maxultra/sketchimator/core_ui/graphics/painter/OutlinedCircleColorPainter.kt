@@ -13,7 +13,7 @@ import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
  */
 data class OutlinedCircleColorPainter(
     val color: Color,
-    val outlineColor: Color,
+    val outlineColor: Color = Color.Unspecified,
     val outlineWidth: Dp = DimenTokens.x05,
 ) : Painter() {
 

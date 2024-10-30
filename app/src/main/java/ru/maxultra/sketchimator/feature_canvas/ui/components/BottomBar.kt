@@ -39,11 +39,11 @@ fun BottomBar(
             )
             IconButton(
                 icon = R.drawable.ic_brush_32,
+                iconColor = SketchimatorTheme.colorScheme.highlight,
                 onClick = listener.onBrushClicked,
             )
             IconButton(
                 icon = R.drawable.ic_erase_32,
-                iconColor = SketchimatorTheme.colorScheme.highlight,
                 onClick = listener.onEraserClicked,
             )
             IconButton(
@@ -51,7 +51,7 @@ fun BottomBar(
                 onClick = listener.onShapesPaletteClicked,
             )
             IconButton(
-                painter = OutlinedCircleColorPainter(Color.Blue, SketchimatorTheme.colorScheme.highlight),
+                painter = OutlinedCircleColorPainter(Color.Blue),
                 onClick = listener.onColorPaletteClicked,
             )
         }
