@@ -7,6 +7,7 @@ object DimenTokens {
     private val base = 4.dp
 
     val Zero = 0.dp
+    val x05 = base * 0.5f // 2
     val x1 = base // 4
     val x2 = base * 2 // 8
     val x3 = base * 3 // 12
