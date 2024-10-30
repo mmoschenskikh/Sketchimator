@@ -4,5 +4,5 @@ object ColorLightTokens {
     val Background = PaletteTokens.White
     val OnBackground = PaletteTokens.Black
     val OnBackgroundSecondary = PaletteTokens.Gray45
-    val Highlight = PaletteTokens.DeepPurple
+    val Highlight = PaletteTokens.ForestGreen
 }

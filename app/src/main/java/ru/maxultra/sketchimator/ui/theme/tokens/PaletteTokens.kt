@@ -9,5 +9,5 @@ object PaletteTokens {
     val White = Color(0xFFFFFFFF)
 
     val AcidGreen = Color(0xFFA8DB10)
-    val DeepPurple = Color(0xFF6200EE)
+    val ForestGreen = Color(0xFF53800B)
 }
