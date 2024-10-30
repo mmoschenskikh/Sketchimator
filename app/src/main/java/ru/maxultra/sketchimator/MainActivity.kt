@@ -9,6 +9,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
+import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,9 +27,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -127,22 +129,22 @@ fun WorkingArea(modifier: Modifier = Modifier) {
 
     Canvas(
         modifier = modifier
-
             .pointerInput(Unit) {
                 awaitEachGesture {
-                    val pic = awaitFirstDown()
-                    currentPosition = pic.position
+                    var pointerChange = awaitFirstDown()
+                    currentPosition = pointerChange.position
                     status = MotionEvent.ACTION_DOWN
-                    do {
-                        val event: PointerEvent = awaitPointerEvent()
-
-                        event.changes.forEach { pointerInputChange: PointerInputChange ->
+                    val change = awaitTouchSlopOrCancellation(pointerChange.id) { cc: PointerInputChange, _: Offset ->
+                        if (cc.positionChange() != Offset.Zero) cc.consume()
+                    }
+                    change?.let {
+                        drag(it.id) { draggingChange ->
+                            pointerChange = draggingChange
                             previousPosition = currentPosition
-                            currentPosition = pointerInputChange.position
+                            currentPosition = pointerChange.position
                             status = MotionEvent.ACTION_MOVE
-                            pointerInputChange.consume()
                         }
-                    } while (event.changes.any { it.pressed })
+                    }
                     status = MotionEvent.ACTION_OUTSIDE
                 }
             }
