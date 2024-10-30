@@ -1,4 +1,4 @@
-package ru.maxultra.sketchimator.ui.components
+package ru.maxultra.sketchimator.feature_canvas.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -11,13 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import ru.maxultra.sketchimator.R
-import ru.maxultra.sketchimator.ui.core_components.IconButton
-import ru.maxultra.sketchimator.ui.core_components.Surface
-import ru.maxultra.sketchimator.ui.graphics.painter.OutlinedCircleColorPainter
-import ru.maxultra.sketchimator.ui.theme.SketchimatorTheme
-import ru.maxultra.sketchimator.ui.theme.tokens.DimenTokens
-import ru.maxultra.sketchimator.ui.util.DayNightPreview
-import ru.maxultra.sketchimator.ui.vm.BottomBarListener
+import ru.maxultra.sketchimator.core_ui.core_components.IconButton
+import ru.maxultra.sketchimator.core_ui.core_components.Surface
+import ru.maxultra.sketchimator.core_ui.graphics.painter.OutlinedCircleColorPainter
+import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
+import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
+import ru.maxultra.sketchimator.core_ui.util.DayNightPreview
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.BottomBarListener
 
 @Composable
 fun BottomBar(

@@ -1,4 +1,4 @@
-package ru.maxultra.sketchimator.ui.theme.tokens
+package ru.maxultra.sketchimator.core_ui.theme.tokens
 
 object ColorDarkTokens {
     val Background = PaletteTokens.Black

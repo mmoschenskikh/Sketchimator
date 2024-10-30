@@ -1,4 +1,4 @@
-package ru.maxultra.sketchimator.ui.vm
+package ru.maxultra.sketchimator.feature_canvas.ui.vm
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Immutable

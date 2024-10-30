@@ -1,4 +1,4 @@
-package ru.maxultra.sketchimator.ui.util
+package ru.maxultra.sketchimator.core_ui.util
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview

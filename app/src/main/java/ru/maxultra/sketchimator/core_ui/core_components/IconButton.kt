@@ -1,4 +1,4 @@
-package ru.maxultra.sketchimator.ui.core_components
+package ru.maxultra.sketchimator.core_ui.core_components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
@@ -12,10 +12,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import ru.maxultra.sketchimator.R
-import ru.maxultra.sketchimator.ui.graphics.painter.OutlinedCircleColorPainter
-import ru.maxultra.sketchimator.ui.theme.SketchimatorTheme
-import ru.maxultra.sketchimator.ui.theme.tokens.DimenTokens
-import ru.maxultra.sketchimator.ui.util.DayNightPreview
+import ru.maxultra.sketchimator.core_ui.graphics.painter.OutlinedCircleColorPainter
+import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
+import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
+import ru.maxultra.sketchimator.core_ui.util.DayNightPreview
 
 @Composable
 fun IconButton(

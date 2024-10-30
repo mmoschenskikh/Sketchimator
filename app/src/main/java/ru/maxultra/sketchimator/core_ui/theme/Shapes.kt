@@ -1,9 +1,9 @@
-package ru.maxultra.sketchimator.ui.theme
+package ru.maxultra.sketchimator.core_ui.theme
 
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
-import ru.maxultra.sketchimator.ui.theme.tokens.ShapeTokens
+import ru.maxultra.sketchimator.core_ui.theme.tokens.ShapeTokens
 
 @Immutable
 data class SketchimatorShapes(

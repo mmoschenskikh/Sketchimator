@@ -33,14 +33,14 @@ import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import ru.maxultra.sketchimator.ui.components.BottomBar
-import ru.maxultra.sketchimator.ui.components.TopBar
-import ru.maxultra.sketchimator.ui.core_components.Surface
-import ru.maxultra.sketchimator.ui.theme.SketchimatorTheme
-import ru.maxultra.sketchimator.ui.theme.tokens.DimenTokens
-import ru.maxultra.sketchimator.ui.vm.BottomBarListener
-import ru.maxultra.sketchimator.ui.vm.TopBarListener
-import ru.maxultra.sketchimator.ui.vm.TopBarVm
+import ru.maxultra.sketchimator.core_ui.core_components.Surface
+import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
+import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
+import ru.maxultra.sketchimator.feature_canvas.ui.components.BottomBar
+import ru.maxultra.sketchimator.feature_canvas.ui.components.TopBar
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.BottomBarListener
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarListener
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarVm
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

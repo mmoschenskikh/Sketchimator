@@ -1,4 +1,4 @@
-package ru.maxultra.sketchimator.ui.theme
+package ru.maxultra.sketchimator.core_ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize

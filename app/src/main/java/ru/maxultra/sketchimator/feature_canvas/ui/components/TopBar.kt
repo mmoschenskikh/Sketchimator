@@ -1,4 +1,4 @@
-package ru.maxultra.sketchimator.ui.components
+package ru.maxultra.sketchimator.feature_canvas.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -10,14 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import ru.maxultra.sketchimator.R
-import ru.maxultra.sketchimator.ui.core_components.ButtonSize
-import ru.maxultra.sketchimator.ui.core_components.IconButton
-import ru.maxultra.sketchimator.ui.core_components.Surface
-import ru.maxultra.sketchimator.ui.theme.SketchimatorTheme
-import ru.maxultra.sketchimator.ui.theme.tokens.DimenTokens
-import ru.maxultra.sketchimator.ui.util.DayNightPreview
-import ru.maxultra.sketchimator.ui.vm.TopBarListener
-import ru.maxultra.sketchimator.ui.vm.TopBarVm
+import ru.maxultra.sketchimator.core_ui.core_components.ButtonSize
+import ru.maxultra.sketchimator.core_ui.core_components.IconButton
+import ru.maxultra.sketchimator.core_ui.core_components.Surface
+import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
+import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
+import ru.maxultra.sketchimator.core_ui.util.DayNightPreview
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarListener
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarVm
 
 @Composable
 fun TopBar(

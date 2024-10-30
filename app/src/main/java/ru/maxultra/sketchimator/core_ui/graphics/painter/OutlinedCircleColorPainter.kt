@@ -1,4 +1,4 @@
-package ru.maxultra.sketchimator.ui.graphics.painter
+package ru.maxultra.sketchimator.core_ui.graphics.painter
 
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
-import ru.maxultra.sketchimator.ui.theme.tokens.DimenTokens
+import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
 
 /**
  * [Painter] implementation used to fill the provided bounds with the circle of the specified color and outline

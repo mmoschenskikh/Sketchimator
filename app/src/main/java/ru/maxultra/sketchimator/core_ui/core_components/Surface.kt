@@ -1,8 +1,8 @@
-package ru.maxultra.sketchimator.ui.core_components
+package ru.maxultra.sketchimator.core_ui.core_components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import ru.maxultra.sketchimator.ui.theme.SketchimatorTheme
+import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
 
 @Composable
 fun Surface(

@@ -1,6 +1,6 @@
-package ru.maxultra.sketchimator.ui.core_components
+package ru.maxultra.sketchimator.core_ui.core_components
 
-import ru.maxultra.sketchimator.ui.theme.tokens.DimenTokens
+import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
 
 enum class ButtonSize {
     Medium,

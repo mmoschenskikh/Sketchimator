@@ -1,10 +1,10 @@
-package ru.maxultra.sketchimator.ui.theme
+package ru.maxultra.sketchimator.core_ui.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import ru.maxultra.sketchimator.ui.theme.tokens.ColorDarkTokens
-import ru.maxultra.sketchimator.ui.theme.tokens.ColorLightTokens
+import ru.maxultra.sketchimator.core_ui.theme.tokens.ColorDarkTokens
+import ru.maxultra.sketchimator.core_ui.theme.tokens.ColorLightTokens
 
 @Immutable
 data class SketchimatorColorScheme(
