@@ -5,4 +5,5 @@ object ColorLightTokens {
     val OnBackground = PaletteTokens.Black
     val OnBackgroundSecondary = PaletteTokens.Gray45
     val Highlight = PaletteTokens.ForestGreen
+    val Fill = PaletteTokens.DarkGrayishBlue
 }

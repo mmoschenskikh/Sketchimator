@@ -5,4 +5,5 @@ object ColorDarkTokens {
     val OnBackground = PaletteTokens.White
     val OnBackgroundSecondary = PaletteTokens.Gray55
     val Highlight = PaletteTokens.AcidGreen
+    val Fill = PaletteTokens.LightBluishWhite
 }
