@@ -21,14 +21,16 @@ import ru.maxultra.sketchimator.ui.vm.TopBarVm
 
 @Composable
 fun TopBar(
-    topBarVm: TopBarVm,
-    topBarListener: TopBarListener,
+    vm: TopBarVm,
+    listener: TopBarListener,
+    modifier: Modifier = Modifier,
 ) {
-    Surface {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.systemBars),
+        ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.systemBars),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -37,15 +39,15 @@ fun TopBar(
             ) {
                 IconButton(
                     icon = R.drawable.ic_curved_arrow_left_24,
-                    onClick = topBarListener.onUndoActionClick,
+                    onClick = listener.onUndoActionClick,
                     size = ButtonSize.Small,
-                    enabled = topBarVm.undoButtonEnabled,
+                    enabled = vm.undoButtonEnabled,
                 )
                 IconButton(
                     icon = R.drawable.ic_curved_arrow_right_24,
-                    onClick = topBarListener.onRedoActionClick,
+                    onClick = listener.onRedoActionClick,
                     size = ButtonSize.Small,
-                    enabled = topBarVm.redoButtonEnabled,
+                    enabled = vm.redoButtonEnabled,
                 )
             }
             Row(
@@ -53,18 +55,18 @@ fun TopBar(
             ) {
                 IconButton(
                     icon = R.drawable.ic_trash_32,
-                    onClick = topBarListener.onRemoveFrameClick,
-                    enabled = topBarVm.removeFrameButtonEnabled,
+                    onClick = listener.onRemoveFrameClick,
+                    enabled = vm.removeFrameButtonEnabled,
                 )
                 IconButton(
                     icon = R.drawable.ic_file_plus_32,
-                    onClick = topBarListener.onAddNewFrameClick,
-                    enabled = topBarVm.addNewFrameButtonEnabled,
+                    onClick = listener.onAddNewFrameClick,
+                    enabled = vm.addNewFrameButtonEnabled,
                 )
                 IconButton(
                     icon = R.drawable.ic_layers_32,
-                    onClick = topBarListener.onOpenFrameListClick,
-                    enabled = topBarVm.openFrameListButtonEnabled,
+                    onClick = listener.onOpenFrameListClick,
+                    enabled = vm.openFrameListButtonEnabled,
                 )
             }
             Row(
@@ -72,13 +74,13 @@ fun TopBar(
             ) {
                 IconButton(
                     icon = R.drawable.ic_pause_32,
-                    onClick = topBarListener.onPauseAnimationClick,
-                    enabled = topBarVm.pauseAnimationButtonEnabled,
+                    onClick = listener.onPauseAnimationClick,
+                    enabled = vm.pauseAnimationButtonEnabled,
                 )
                 IconButton(
                     icon = R.drawable.ic_play_32,
-                    onClick = topBarListener.onStartAnimationClick,
-                    enabled = topBarVm.startAnimationButtonEnabled,
+                    onClick = listener.onStartAnimationClick,
+                    enabled = vm.startAnimationButtonEnabled,
                 )
             }
         }
@@ -90,7 +92,7 @@ fun TopBar(
 private fun TopBarPreview() {
     SketchimatorTheme {
         TopBar(
-            topBarVm = TopBarVm(
+            vm = TopBarVm(
                 undoButtonEnabled = true,
                 redoButtonEnabled = false,
                 removeFrameButtonEnabled = false,
@@ -99,7 +101,7 @@ private fun TopBarPreview() {
                 pauseAnimationButtonEnabled = false,
                 startAnimationButtonEnabled = true,
             ),
-            topBarListener = TopBarListener(
+            listener = TopBarListener(
                 onUndoActionClick = {},
                 onRedoActionClick = {},
                 onRemoveFrameClick = {},
