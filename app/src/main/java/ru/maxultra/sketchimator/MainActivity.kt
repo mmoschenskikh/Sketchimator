@@ -38,6 +38,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import ru.maxultra.sketchimator.core_ui.core_components.Surface
 import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
 import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
@@ -49,14 +54,19 @@ import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarVm
 
 // todo че дальше
 // 1. выбрать архитектуру, затащить базовые классы для реализации бизнес-логики
+// 2. frame counter
+// 3. хинты на задизейбленные кнопки (например: нельзя стартовать анимацию, потому что только один кадр)
 
 class MainActivity : ComponentActivity() {
+
+    var playJob: Job? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            var isPlaying by remember { mutableStateOf(false) }
             var showFrameList by remember { mutableStateOf(false) }
-            val frames = remember { mutableListOf<Pair<List<Path>, List<Path>>>() }
+            val frames = remember { mutableStateListOf<Pair<List<Path>, List<Path>>>() }
             val paths = remember { mutableStateListOf<Path>() }
             val undonePaths = remember { mutableStateListOf<Path>() }
             SketchimatorTheme {
@@ -96,13 +106,13 @@ class MainActivity : ComponentActivity() {
                         topBar = {
                             TopBar(
                                 vm = TopBarVm(
-                                    undoButtonEnabled = paths.isNotEmpty(),
-                                    redoButtonEnabled = undonePaths.isNotEmpty(),
-                                    removeFrameButtonEnabled = frames.isNotEmpty(),
-                                    addNewFrameButtonEnabled = paths.isNotEmpty() || undonePaths.isNotEmpty(),
-                                    openFrameListButtonEnabled = frames.isNotEmpty() || paths.isNotEmpty() || undonePaths.isNotEmpty(),
-                                    pauseAnimationButtonEnabled = false,
-                                    startAnimationButtonEnabled = true,
+                                    undoButtonEnabled = isPlaying.not() && paths.isNotEmpty(),
+                                    redoButtonEnabled = isPlaying.not() && undonePaths.isNotEmpty(),
+                                    removeFrameButtonEnabled = isPlaying.not() && frames.isNotEmpty(),
+                                    addNewFrameButtonEnabled = isPlaying.not(),
+                                    openFrameListButtonEnabled = true,
+                                    pauseAnimationButtonEnabled = isPlaying,
+                                    startAnimationButtonEnabled = isPlaying.not() && frames.isNotEmpty(),
                                 ),
                                 listener = TopBarListener(
                                     onUndoActionClick = {
@@ -123,12 +133,40 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onAddNewFrameClick = {
                                         frames.add(paths.toList() to undonePaths.toList())
-                                        paths.clear()
-                                        undonePaths.clear()
+//                                        paths.clear()
+//                                        undonePaths.clear()
                                     },
                                     onOpenFrameListClick = { showFrameList = true },
-                                    onPauseAnimationClick = {},
-                                    onStartAnimationClick = {},
+                                    onPauseAnimationClick = {
+                                        if (isPlaying) {
+                                            isPlaying = false
+                                            playJob?.cancel()
+                                            playJob = null
+                                            val frame = frames.removeAt(frames.lastIndex)
+                                            paths.clear()
+                                            paths.addAll(frame.first)
+                                            undonePaths.clear()
+                                            undonePaths.addAll(frame.second)
+                                        }
+
+                                    },
+                                    onStartAnimationClick = {
+                                        if (isPlaying.not()) {
+                                            isPlaying = true
+                                            playJob = lifecycleScope.launch {
+                                                frames.add(paths.toList() to undonePaths.toList())
+                                                val allFrames = frames.map { it.first }
+                                                while (isActive) {
+                                                    allFrames.forEach { currentFrame ->
+                                                        paths.clear()
+                                                        paths.addAll(currentFrame)
+                                                        delay(100L)
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                    },
                                 ),
                                 modifier = Modifier.padding(top = DimenTokens.x4, start = DimenTokens.x4, end = DimenTokens.x4),
                             )
@@ -142,7 +180,11 @@ class MainActivity : ComponentActivity() {
                                     onShapesPaletteClicked = {},
                                     onColorPaletteClicked = {},
                                 ),
-                                modifier = Modifier.padding(start = DimenTokens.x4, end = DimenTokens.x4, bottom = DimenTokens.x4),
+                                modifier = Modifier.padding(
+                                    start = DimenTokens.x4,
+                                    end = DimenTokens.x4,
+                                    bottom = DimenTokens.x4
+                                ),
                             )
                         }
 
@@ -170,6 +212,7 @@ class MainActivity : ComponentActivity() {
                                     paths = paths,
                                     onPathAdded = { paths.add(it) },
                                     onUndonePathsClear = { undonePaths.clear() },
+                                    previousFrame = frames.lastOrNull()?.first?.takeIf { playJob == null }
                                 )
                             }
                         }
@@ -191,6 +234,7 @@ fun WorkingArea(
     paths: List<Path>,
     onPathAdded: (Path) -> Unit,
     onUndonePathsClear: () -> Unit,
+    previousFrame: List<Path>?,
 ) {
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
     var previousPosition by remember { mutableStateOf(Offset.Unspecified) }
@@ -249,6 +293,15 @@ fun WorkingArea(
         }
         with(drawContext.canvas.nativeCanvas) {
             save()
+            Log.d("Sketchimator", "Previous frame: $previousFrame")
+            previousFrame?.forEach { p ->
+                drawPath(
+                    p,
+                    color = Color.Blue,
+                    alpha = 0.25f,
+                    style = Stroke(width = 10f)
+                )
+            }
             paths.forEach { p ->
                 drawPath(
                     p,
