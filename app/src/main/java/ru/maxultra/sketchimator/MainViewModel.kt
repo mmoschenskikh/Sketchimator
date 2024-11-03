@@ -1,19 +1,27 @@
 package ru.maxultra.sketchimator
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
 
 class MainViewModel : ViewModel() {
 
     private val _appState: MutableStateFlow<AppState> = MutableStateFlow(
         AppState(
-            screenStack = listOf(SketchimatorScreen.Canvas),
+            screenStack = listOf(
+                SketchimatorScreen.Canvas(
+                    drawingTool = DrawingTool.PENCIL,
+                    color = Color.Blue,
+                ),
+            ),
             frames = listOf(
                 Frame(
                     drawnPaths = emptyList(),
@@ -142,6 +150,16 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun onToolClicked(tool: DrawingTool) {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(drawingTool = tool)
+            )
+        }
+    }
+
     private fun clearUndonePaths() {
         _appState.update { currentState ->
             currentState.copyWithCurrentFrameChanged { currentFrame ->
@@ -151,6 +169,7 @@ class MainViewModel : ViewModel() {
     }
 }
 
+@Immutable
 data class AppState(
     val screenStack: List<SketchimatorScreen>,
     val frames: List<Frame>,
@@ -180,6 +199,7 @@ data class AppState(
     }
 }
 
+@Immutable
 data class Frame(
     val drawnPaths: List<Path>,
     val undonePaths: List<Path>,
@@ -187,9 +207,14 @@ data class Frame(
 
 sealed class SketchimatorScreen {
 
-    data object Canvas : SketchimatorScreen()
+    @Immutable
+    data class Canvas(
+        val drawingTool: DrawingTool,
+        val color: Color,
+    ) : SketchimatorScreen()
 
+    @Immutable
     data object AnimationPlayer : SketchimatorScreen()
-
+    @Immutable
     data object FrameList : SketchimatorScreen()
 }

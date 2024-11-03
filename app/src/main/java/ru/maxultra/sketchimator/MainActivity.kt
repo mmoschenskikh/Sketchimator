@@ -28,11 +28,11 @@ class MainActivity : ComponentActivity() {
                 )
 
                 when (state.currentScreen) {
-                    SketchimatorScreen.Canvas -> CanvasScreen()
-                    SketchimatorScreen.AnimationPlayer -> {
+                    is SketchimatorScreen.Canvas -> CanvasScreen()
+                    is SketchimatorScreen.AnimationPlayer -> {
 
                     }
-                    SketchimatorScreen.FrameList -> FrameListScreen()
+                    is SketchimatorScreen.FrameList -> FrameListScreen()
                 }
             }
         }

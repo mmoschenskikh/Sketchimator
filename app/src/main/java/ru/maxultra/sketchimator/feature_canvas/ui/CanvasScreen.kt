@@ -38,40 +38,40 @@ import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
 import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
 import ru.maxultra.sketchimator.feature_canvas.ui.components.BottomBar
 import ru.maxultra.sketchimator.feature_canvas.ui.components.TopBar
+import ru.maxultra.sketchimator.feature_canvas.ui.factory.toBottomBarVm
 import ru.maxultra.sketchimator.feature_canvas.ui.factory.toTopBarVm
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.BottomBarListener
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarListener
 
 
 @Composable
 fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
     val state by viewModel.appState.collectAsState()
-    val topBarListener = TopBarListener(
-        onUndoActionClick = viewModel::onUndoActionClick,
-        onRedoActionClick = viewModel::onRedoActionClick,
-        onRemoveFrameClick = viewModel::onRemoveFrameClick,
-        onAddNewFrameClick = viewModel::onAddNewFrameClick,
-        onOpenFrameListClick = viewModel::onOpenFrameListClick,
-        onPauseAnimationClick = viewModel::onPauseAnimationClick,
-        onStartAnimationClick = viewModel::onStartAnimationClick,
-    )
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopBar(
                 vm = state.toTopBarVm(),
-                listener = topBarListener,
+                listener = TopBarListener(
+                    onUndoActionClick = viewModel::onUndoActionClick,
+                    onRedoActionClick = viewModel::onRedoActionClick,
+                    onRemoveFrameClick = viewModel::onRemoveFrameClick,
+                    onAddNewFrameClick = viewModel::onAddNewFrameClick,
+                    onOpenFrameListClick = viewModel::onOpenFrameListClick,
+                    onPauseAnimationClick = viewModel::onPauseAnimationClick,
+                    onStartAnimationClick = viewModel::onStartAnimationClick,
+                ),
                 modifier = Modifier.padding(top = DimenTokens.x4, start = DimenTokens.x4, end = DimenTokens.x4),
             )
         },
         bottomBar = {
             BottomBar(
+                vm = (state.currentScreen as SketchimatorScreen.Canvas).toBottomBarVm(),
                 listener = BottomBarListener(
-                    onPencilClicked = {},
-                    onBrushClicked = {},
-                    onEraserClicked = {},
-                    onShapesPaletteClicked = {},
-                    onColorPaletteClicked = {},
+                    onPencilClicked = { viewModel.onToolClicked(DrawingTool.PENCIL) },
+                    onEraserClicked = { viewModel.onToolClicked(DrawingTool.ERASER) },
+                    onColorPaletteClicked = { viewModel.onToolClicked(DrawingTool.PALETTE) },
                 ),
                 modifier = Modifier.padding(
                     start = DimenTokens.x4,
@@ -104,7 +104,7 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
                         .clip(SketchimatorTheme.shapes.extraLarge),
                     paths = viewModel.currentFrameDrawnPaths,
                     onPathAdded = viewModel::onPathDrawn,
-                    previousFrame = state.previousFrame?.drawnPaths?.takeIf { state.currentScreen == SketchimatorScreen.Canvas }
+                    previousFrame = state.previousFrame?.drawnPaths?.takeIf { state.currentScreen is SketchimatorScreen.Canvas }
                 )
             }
         }

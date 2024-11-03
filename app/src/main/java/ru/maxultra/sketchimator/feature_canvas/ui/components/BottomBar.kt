@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,9 +22,12 @@ import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
 import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
 import ru.maxultra.sketchimator.core_ui.util.DayNightPreview
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.BottomBarListener
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.BottomBarVm
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
 
 @Composable
 fun BottomBar(
+    vm: BottomBarVm,
     listener: BottomBarListener,
     modifier: Modifier = Modifier,
 ) {
@@ -36,22 +43,30 @@ fun BottomBar(
             IconButton(
                 icon = R.drawable.ic_pencil_32,
                 onClick = listener.onPencilClicked,
-            )
-            IconButton(
-                icon = R.drawable.ic_brush_32,
-                iconColor = SketchimatorTheme.colorScheme.highlight,
-                onClick = listener.onBrushClicked,
+                iconColor = if (vm.selectedTool == DrawingTool.PENCIL) {
+                    SketchimatorTheme.colorScheme.highlight
+                } else {
+                    SketchimatorTheme.colorScheme.onBackground
+                },
             )
             IconButton(
                 icon = R.drawable.ic_erase_32,
                 onClick = listener.onEraserClicked,
+                iconColor = if (vm.selectedTool == DrawingTool.ERASER) {
+                    SketchimatorTheme.colorScheme.highlight
+                } else {
+                    SketchimatorTheme.colorScheme.onBackground
+                },
             )
             IconButton(
-                icon = R.drawable.ic_instruments_32,
-                onClick = listener.onShapesPaletteClicked,
-            )
-            IconButton(
-                painter = OutlinedCircleColorPainter(Color.Blue),
+                painter = OutlinedCircleColorPainter(
+                    color = vm.currentColor,
+                    outlineColor = if (vm.selectedTool == DrawingTool.PALETTE) {
+                        SketchimatorTheme.colorScheme.highlight
+                    } else {
+                        Color.Unspecified
+                    },
+                ),
                 onClick = listener.onColorPaletteClicked,
             )
         }
@@ -62,13 +77,13 @@ fun BottomBar(
 @Composable
 private fun BottomBarPreview() {
     SketchimatorTheme {
+        var selectedTool by remember { mutableStateOf(DrawingTool.PENCIL) }
         BottomBar(
+            vm = BottomBarVm(selectedTool = selectedTool, currentColor = Color.Blue),
             listener = BottomBarListener(
-                onPencilClicked = {},
-                onBrushClicked = {},
-                onEraserClicked = {},
-                onShapesPaletteClicked = {},
-                onColorPaletteClicked = {},
+                onPencilClicked = { selectedTool = DrawingTool.PENCIL },
+                onEraserClicked = { selectedTool = DrawingTool.ERASER },
+                onColorPaletteClicked = { selectedTool = DrawingTool.PALETTE },
             ),
         )
     }
