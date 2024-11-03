@@ -126,37 +126,34 @@ class MainViewModel : ViewModel() {
     }
 
     fun onPauseAnimationClick() {
-        //                                        if (isPlaying) {
-//                                            isPlaying = false
-//                                            playJob?.cancel()
-//                                            playJob = null
-//                                            val frame = frames.removeAt(frames.lastIndex)
-//                                            paths.clear()
-//                                            paths.addAll(frame.first)
-//                                            undonePaths.clear()
-//                                            undonePaths.addAll(frame.second)
-//                                        }
-//
-
+//        if (isPlaying) {
+//            isPlaying = false
+//            playJob?.cancel()
+//            playJob = null
+//            val frame = frames.removeAt(frames.lastIndex)
+//            paths.clear()
+//            paths.addAll(frame.first)
+//            undonePaths.clear()
+//            undonePaths.addAll(frame.second)
+//        }
     }
 
     fun onStartAnimationClick() {
-        //                                        if (isPlaying.not()) {
-//                                            isPlaying = true
-//                                            playJob = lifecycleScope.launch {
-//                                                frames.add(paths.toList() to undonePaths.toList())
-//                                                val allFrames = frames.map { it.first }
-//                                                while (isActive) {
-//                                                    allFrames.forEach { currentFrame ->
-//                                                        paths.clear()
-//                                                        paths.addAll(currentFrame)
-//                                                        delay(100L)
-//                                                    }
-//                                                }
+//        if (isPlaying.not()) {
+//            isPlaying = true
+//            playJob = lifecycleScope.launch {
+//                frames.add(paths.toList() to undonePaths.toList())
+//                val allFrames = frames.map { it.first }
+//                while (isActive) {
+//                    allFrames.forEach { currentFrame ->
+//                        paths.clear()
+//                        paths.addAll(currentFrame)
+//                        delay(100L)
+//                    }
+//                }
 //
-//                                            }
-//                                        }
-
+//            }
+//        }
     }
 
     fun onBackClick() {
