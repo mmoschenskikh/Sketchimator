@@ -102,7 +102,7 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
                         .fillMaxSize()
                         .padding(DimenTokens.x4)
                         .clip(SketchimatorTheme.shapes.extraLarge),
-                    paths = state.currentFrame.drawnPaths,
+                    paths = viewModel.currentFrameDrawnPaths,
                     onPathAdded = viewModel::onPathDrawn,
                     previousFrame = state.previousFrame?.drawnPaths?.takeIf { state.currentScreen == SketchimatorScreen.Canvas }
                 )
@@ -174,14 +174,14 @@ fun WorkingArea(
                 status = MotionEvent.ACTION_OUTSIDE
             }
         }
-//            previousFrame?.forEach { p ->
-//                drawPath(
-//                    p,
-//                    color = Color.Blue,
-//                    alpha = 0.25f,
-//                    style = Stroke(width = 10f)
-//                )
-//            }
+        previousFrame?.forEach { p ->
+            drawPath(
+                p,
+                color = Color.Blue,
+                alpha = 0.25f,
+                style = Stroke(width = 10f)
+            )
+        }
         paths.forEach { p ->
             drawPath(
                 p,

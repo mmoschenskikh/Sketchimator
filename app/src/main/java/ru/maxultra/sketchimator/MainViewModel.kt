@@ -1,6 +1,7 @@
 package ru.maxultra.sketchimator
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Path
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,13 +24,21 @@ class MainViewModel : ViewModel() {
     )
     val appState: StateFlow<AppState> = _appState.asStateFlow()
 
-    val paths = mutableStateListOf<Path>()
+    /**
+     * List that contains all paths drawn in current frame.
+     *
+     * We need this property separately from [_appState] because
+     * [_appState] takes significant time to update and causes blinking of drawn lines.
+     */
+    private val _currentFrameDrawnPaths: SnapshotStateList<Path> = mutableStateListOf()
+    val currentFrameDrawnPaths: List<Path> = _currentFrameDrawnPaths
 
     fun onPathDrawn(path: Path) {
+        _currentFrameDrawnPaths.add(path)
         _appState.update { currentState ->
             currentState.copyWithCurrentFrameChanged { currentFrame ->
                 currentFrame.copy(
-                    drawnPaths = currentFrame.drawnPaths + path,
+                    drawnPaths = currentFrameDrawnPaths.toList(),
                 )
             }
         }
@@ -37,11 +46,11 @@ class MainViewModel : ViewModel() {
     }
 
     fun onUndoActionClick() {
+        val undonePath = _currentFrameDrawnPaths.removeLast()
         _appState.update { currentState ->
             currentState.copyWithCurrentFrameChanged { currentFrame ->
-                val undonePath = currentFrame.drawnPaths.last()
                 currentFrame.copy(
-                    drawnPaths = currentFrame.drawnPaths.dropLast(1),
+                    drawnPaths = currentFrameDrawnPaths.toList(),
                     undonePaths = currentFrame.undonePaths + undonePath,
                 )
             }
@@ -52,6 +61,7 @@ class MainViewModel : ViewModel() {
         _appState.update { currentState ->
             currentState.copyWithCurrentFrameChanged { currentFrame ->
                 val redonePath = currentFrame.undonePaths.last()
+                _currentFrameDrawnPaths.add(redonePath)
                 currentFrame.copy(
                     drawnPaths = currentFrame.drawnPaths + redonePath,
                     undonePaths = currentFrame.undonePaths.dropLast(1),
@@ -66,9 +76,12 @@ class MainViewModel : ViewModel() {
                 frames = currentState.frames.dropLast(1),
             )
         }
+        _currentFrameDrawnPaths.clear()
+        _currentFrameDrawnPaths.addAll(appState.value.currentFrame.drawnPaths)
     }
 
     fun onAddNewFrameClick() {
+        _currentFrameDrawnPaths.clear()
         _appState.update { currentState ->
             currentState.copy(
                 frames = currentState.frames + Frame(
