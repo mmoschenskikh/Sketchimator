@@ -38,7 +38,8 @@ fun BottomBar(
     ) {
         if (vm.showColorPalette) {
             ColorPalette(
-                onColorSelected = listener.onColorSelected
+                sourceColor = vm.currentColor,
+                onColorSelected = listener.onColorSelected,
             )
         }
 
