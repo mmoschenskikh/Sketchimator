@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 
 @Immutable
 data class BottomBarVm(
+    val previousColors: List<Color>,
     val selectedTool: DrawingTool?,
     val currentColor: Color,
     val showColorPalette: Boolean,

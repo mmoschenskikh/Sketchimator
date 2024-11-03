@@ -26,6 +26,7 @@ import ru.maxultra.sketchimator.core_ui.util.DayNightPreview
 
 @Composable
 fun ColorPalette(
+    previousColors: List<Color>,
     sourceColor: Color,
     onColorSelected: (Color?) -> Unit,
     modifier: Modifier = Modifier,
@@ -60,26 +61,24 @@ fun ColorPalette(
                     icon = R.drawable.ic_palette_32,
                     onClick = { showColorPickerDialog = true },
                 )
-                IconButton(
-                    painter = OutlinedCircleColorPainter(Color.Blue),
-                    onClick = { onColorSelected.invoke(Color.Blue) },
-                )
-                IconButton(
-                    painter = OutlinedCircleColorPainter(Color.Red),
-                    onClick = { onColorSelected.invoke(Color.Red) },
-                )
-                IconButton(
-                    painter = OutlinedCircleColorPainter(Color.Green),
-                    onClick = { onColorSelected.invoke(Color.Green) },
-                )
-                IconButton(
-                    painter = OutlinedCircleColorPainter(Color.Yellow),
-                    onClick = { onColorSelected.invoke(Color.Yellow) },
-                )
+                for (color in previousColors) {
+                    QuickColor(color, onColorSelected)
+                }
             }
         }
 
     }
+}
+
+@Composable
+private fun QuickColor(
+    color: Color,
+    onColorSelected: (Color) -> Unit,
+) {
+    IconButton(
+        painter = OutlinedCircleColorPainter(color),
+        onClick = { onColorSelected.invoke(color) },
+    )
 }
 
 @DayNightPreview
@@ -87,6 +86,7 @@ fun ColorPalette(
 private fun ColorPalettePreview() {
     SketchimatorTheme {
         ColorPalette(
+            previousColors = emptyList(),
             sourceColor = Color.Blue,
             onColorSelected = {}
         )

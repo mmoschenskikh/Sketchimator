@@ -23,6 +23,12 @@ class MainViewModel : ViewModel() {
                         color = Color.Blue,
                         strokeWidth = 20f,
                     ),
+                    previousColors = listOf(
+                        Color.Blue,
+                        Color.Green,
+                        Color.Red,
+                        Color.Yellow,
+                    )
                 ),
             ),
             frames = listOf(
@@ -65,7 +71,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun onUndoActionClick() {
-        val undonePath = _currentFrameDrawnPaths.removeLast()
+        val undonePath = _currentFrameDrawnPaths.removeAt(_currentFrameDrawnPaths.lastIndex)
         _appState.update { currentState ->
             currentState.copyWithCurrentFrameChanged { currentFrame ->
                 currentFrame.copy(
@@ -197,7 +203,12 @@ class MainViewModel : ViewModel() {
                     parameters = canvas.parameters.copy(
                         drawingTool = canvas.previousDrawingTool,
                         color = color ?: canvas.parameters.color,
-                    )
+                    ),
+                    previousColors = if (color != null) {
+                        (canvas.previousColors + color).takeLast(PREVIOUS_COLORS_LIMIT)
+                    } else {
+                        canvas.previousColors
+                    },
                 )
             )
         }
@@ -268,6 +279,7 @@ sealed class SketchimatorScreen {
     @Immutable
     data class Canvas(
         val parameters: DrawParameters,
+        val previousColors: List<Color>,
         val previousDrawingTool: DrawingTool = DrawingTool.NONE,
         val showColorPalette: Boolean = false,
     ) : SketchimatorScreen()
@@ -278,3 +290,5 @@ sealed class SketchimatorScreen {
     @Immutable
     data object FrameList : SketchimatorScreen()
 }
+
+private const val PREVIOUS_COLORS_LIMIT = 4

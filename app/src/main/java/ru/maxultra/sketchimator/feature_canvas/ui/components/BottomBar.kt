@@ -38,6 +38,7 @@ fun BottomBar(
     ) {
         if (vm.showColorPalette) {
             ColorPalette(
+                previousColors = vm.previousColors,
                 sourceColor = vm.currentColor,
                 onColorSelected = listener.onColorSelected,
             )
@@ -88,6 +89,7 @@ private fun BottomBarPreview() {
         var showColorPalette by remember { mutableStateOf(false) }
         BottomBar(
             vm = BottomBarVm(
+                previousColors = emptyList(),
                 selectedTool = selectedTool,
                 currentColor = Color.Blue,
                 showColorPalette = showColorPalette,
