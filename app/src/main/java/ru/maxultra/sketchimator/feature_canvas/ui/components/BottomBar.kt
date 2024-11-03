@@ -61,7 +61,7 @@ fun BottomBar(
             IconButton(
                 painter = OutlinedCircleColorPainter(
                     color = vm.currentColor,
-                    outlineColor = if (vm.selectedTool == DrawingTool.PALETTE) {
+                    outlineColor = if (vm.showColorPalette) {
                         SketchimatorTheme.colorScheme.highlight
                     } else {
                         Color.Unspecified
@@ -78,12 +78,17 @@ fun BottomBar(
 private fun BottomBarPreview() {
     SketchimatorTheme {
         var selectedTool by remember { mutableStateOf(DrawingTool.PENCIL) }
+        var showColorPalette by remember { mutableStateOf(true) }
         BottomBar(
-            vm = BottomBarVm(selectedTool = selectedTool, currentColor = Color.Blue),
+            vm = BottomBarVm(
+                selectedTool = selectedTool,
+                currentColor = Color.Blue,
+                showColorPalette = showColorPalette,
+            ),
             listener = BottomBarListener(
                 onPencilClicked = { selectedTool = DrawingTool.PENCIL },
                 onEraserClicked = { selectedTool = DrawingTool.ERASER },
-                onColorPaletteClicked = { selectedTool = DrawingTool.PALETTE },
+                onColorPaletteClicked = { showColorPalette = true },
             ),
         )
     }

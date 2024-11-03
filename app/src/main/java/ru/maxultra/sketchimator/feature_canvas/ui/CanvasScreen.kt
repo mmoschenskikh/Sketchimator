@@ -1,6 +1,5 @@
 package ru.maxultra.sketchimator.feature_canvas.ui
 
-import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -21,16 +20,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ru.maxultra.sketchimator.DrawParameters
 import ru.maxultra.sketchimator.MainViewModel
+import ru.maxultra.sketchimator.PathWithParameters
 import ru.maxultra.sketchimator.R
 import ru.maxultra.sketchimator.SketchimatorScreen
 import ru.maxultra.sketchimator.core_ui.core_components.Surface
@@ -41,6 +45,7 @@ import ru.maxultra.sketchimator.feature_canvas.ui.components.TopBar
 import ru.maxultra.sketchimator.feature_canvas.ui.factory.toBottomBarVm
 import ru.maxultra.sketchimator.feature_canvas.ui.factory.toTopBarVm
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.BottomBarListener
+import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingStatus
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarListener
 
@@ -48,6 +53,7 @@ import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarListener
 @Composable
 fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
     val state by viewModel.appState.collectAsState()
+    val screen = state.currentScreen as SketchimatorScreen.Canvas
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -62,31 +68,36 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
                     onPauseAnimationClick = viewModel::onPauseAnimationClick,
                     onStartAnimationClick = viewModel::onStartAnimationClick,
                 ),
-                modifier = Modifier.padding(top = DimenTokens.x4, start = DimenTokens.x4, end = DimenTokens.x4),
+                modifier = Modifier
+                    .padding(
+                        top = DimenTokens.x4,
+                        start = DimenTokens.x4,
+                        end = DimenTokens.x4,
+                    ),
             )
         },
         bottomBar = {
             BottomBar(
-                vm = (state.currentScreen as SketchimatorScreen.Canvas).toBottomBarVm(),
+                vm = screen.toBottomBarVm(),
                 listener = BottomBarListener(
                     onPencilClicked = { viewModel.onToolClicked(DrawingTool.PENCIL) },
                     onEraserClicked = { viewModel.onToolClicked(DrawingTool.ERASER) },
-                    onColorPaletteClicked = { viewModel.onToolClicked(DrawingTool.PALETTE) },
+                    onColorPaletteClicked = { viewModel.onPaletteClicked() },
                 ),
-                modifier = Modifier.padding(
-                    start = DimenTokens.x4,
-                    end = DimenTokens.x4,
-                    bottom = DimenTokens.x4
-                ),
+                modifier = Modifier
+                    .padding(
+                        start = DimenTokens.x4,
+                        end = DimenTokens.x4,
+                        bottom = DimenTokens.x4,
+                    ),
             )
         }
-
     ) { innerPadding ->
         Surface {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
+                    .padding(innerPadding),
             ) {
                 Image(
                     modifier = Modifier
@@ -95,67 +106,70 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
                         .clip(SketchimatorTheme.shapes.extraLarge),
                     painter = painterResource(id = R.drawable.background),
                     contentScale = ContentScale.Crop,
-                    contentDescription = null
+                    contentDescription = null,
                 )
                 WorkingArea(
+                    drawParameters = screen.parameters,
+                    currentFramePaths = viewModel.currentFrameDrawnPaths,
+                    previousFramePaths = state.previousFrame?.drawnPaths,
+                    onPathAdded = viewModel::onPathDrawn,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(DimenTokens.x4)
                         .clip(SketchimatorTheme.shapes.extraLarge),
-                    paths = viewModel.currentFrameDrawnPaths,
-                    onPathAdded = viewModel::onPathDrawn,
-                    previousFrame = state.previousFrame?.drawnPaths?.takeIf { state.currentScreen is SketchimatorScreen.Canvas }
                 )
             }
         }
     }
-
 }
 
 /**
  * Working area that contains a canvas to draw on.
  */
 @Composable
-fun WorkingArea(
-    modifier: Modifier = Modifier,
-    paths: List<Path>,
+private fun WorkingArea(
+    drawParameters: DrawParameters,
+    currentFramePaths: List<PathWithParameters>,
+    previousFramePaths: List<PathWithParameters>?,
     onPathAdded: (Path) -> Unit,
-    previousFrame: List<Path>?,
+    modifier: Modifier = Modifier,
 ) {
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
     var previousPosition by remember { mutableStateOf(Offset.Unspecified) }
-    var status by remember { mutableStateOf(MotionEvent.ACTION_OUTSIDE) }
-    var path by remember { mutableStateOf(Path()) }
+    var status by remember { mutableStateOf(DrawingStatus.IDLE) }
+    var currentlyDrawingPath by remember { mutableStateOf(Path()) }
 
     Canvas(
         modifier = modifier
             .pointerInput(Unit) {
                 awaitEachGesture {
-                    var pointerChange = awaitFirstDown()
-                    currentPosition = pointerChange.position
-                    status = MotionEvent.ACTION_DOWN
-                    val change = awaitTouchSlopOrCancellation(pointerChange.id) { cc: PointerInputChange, _: Offset ->
-                        if (cc.positionChange() != Offset.Zero) cc.consume()
+                    var pointer = awaitFirstDown()
+                    currentPosition = pointer.position
+                    status = DrawingStatus.DOWN
+                    val change = awaitTouchSlopOrCancellation(pointer.id) { pointerChange: PointerInputChange, _: Offset ->
+                        if (pointerChange.positionChange() != Offset.Zero) {
+                            pointerChange.consume()
+                        }
                     }
                     change?.let {
                         drag(it.id) { draggingChange ->
-                            pointerChange = draggingChange
-                            currentPosition = pointerChange.position
-                            status = MotionEvent.ACTION_MOVE
+                            pointer = draggingChange
+                            currentPosition = pointer.position
+                            status = DrawingStatus.MOVE
                         }
                     }
-                    status = MotionEvent.ACTION_UP
+                    status = DrawingStatus.UP
                 }
             }
     ) {
         when (status) {
-            MotionEvent.ACTION_DOWN -> {
-                path.moveTo(currentPosition.x, currentPosition.y)
+            DrawingStatus.DOWN -> {
+                currentlyDrawingPath.moveTo(currentPosition.x, currentPosition.y)
                 previousPosition = currentPosition
             }
 
-            MotionEvent.ACTION_MOVE -> {
-                path.quadraticTo(
+            DrawingStatus.MOVE -> {
+                currentlyDrawingPath.quadraticTo(
                     previousPosition.x,
                     previousPosition.y,
                     (previousPosition.x + currentPosition.x) / 2,
@@ -164,37 +178,65 @@ fun WorkingArea(
                 previousPosition = currentPosition
             }
 
-            MotionEvent.ACTION_UP -> {
-                if (path.isEmpty.not() && path.getBounds().size != INVISIBLE_PATH_SIZE) {
-                    onPathAdded(path)
+            DrawingStatus.UP -> {
+                if (currentlyDrawingPath.isEmpty.not() && currentlyDrawingPath.getBounds().size != INVISIBLE_PATH_SIZE) {
+                    onPathAdded(currentlyDrawingPath)
                 }
-                path = Path()
+                currentlyDrawingPath = Path()
                 currentPosition = Offset.Unspecified
                 previousPosition = Offset.Unspecified
-                status = MotionEvent.ACTION_OUTSIDE
+                status = DrawingStatus.IDLE
             }
+
+            DrawingStatus.IDLE -> Unit
         }
-        previousFrame?.forEach { p ->
+        with(drawContext.canvas.nativeCanvas) {
+            val previousFrameLayer = saveLayer(null, null)
+            previousFramePaths?.forEach { path -> drawPathWithParameters(path, drawingPreviousFrame = true) }
+            restoreToCount(previousFrameLayer)
+
+            val currentFrameLayer = saveLayer(null, null)
+            currentFramePaths.forEach { path -> drawPathWithParameters(path) }
+            drawPathWithParameters(PathWithParameters(currentlyDrawingPath, drawParameters))
+            restoreToCount(currentFrameLayer)
+        }
+    }
+}
+
+private fun DrawScope.drawPathWithParameters(
+    path: PathWithParameters,
+    drawingPreviousFrame: Boolean = false,
+) {
+    when (path.parameters.drawingTool) {
+        DrawingTool.PENCIL -> {
+            val alpha = if (drawingPreviousFrame) {
+                PREVIOUS_FRAME_ALPHA * path.parameters.alpha
+            } else {
+                path.parameters.alpha
+            }
             drawPath(
-                p,
-                color = Color.Blue,
-                alpha = 0.25f,
-                style = Stroke(width = 10f)
+                path = path.path,
+                color = path.parameters.color,
+                alpha = alpha,
+                style = Stroke(width = path.parameters.strokeWidth),
+                blendMode = if (drawingPreviousFrame) {
+                    BlendMode.DstAtop
+                } else {
+                    DrawScope.DefaultBlendMode
+                }
             )
         }
-        paths.forEach { p ->
+
+        DrawingTool.ERASER -> {
             drawPath(
-                p,
-                color = Color.Blue,
-                style = Stroke(width = 10f)
+                path = path.path,
+                color = Color.Transparent,
+                style = Stroke(width = path.parameters.strokeWidth),
+                blendMode = BlendMode.Clear,
             )
         }
-        drawPath(
-            path,
-            color = Color.Blue,
-            style = Stroke(width = 10f)
-        )
     }
 }
 
 private val INVISIBLE_PATH_SIZE = Size(width = 0f, height = 0f)
+private const val PREVIOUS_FRAME_ALPHA = 0.25f

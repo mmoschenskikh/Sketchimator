@@ -40,7 +40,7 @@ fun FrameListScreen(viewModel: MainViewModel = viewModel()) {
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         frame.drawnPaths.forEach { path ->
                             drawPath(
-                                path,
+                                path.path,
                                 color = Color.Blue,
                                 style = Stroke(width = 10f)
                             )

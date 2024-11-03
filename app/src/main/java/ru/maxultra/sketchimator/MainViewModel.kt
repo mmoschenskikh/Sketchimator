@@ -18,8 +18,12 @@ class MainViewModel : ViewModel() {
         AppState(
             screenStack = listOf(
                 SketchimatorScreen.Canvas(
-                    drawingTool = DrawingTool.PENCIL,
-                    color = Color.Blue,
+                    parameters = DrawParameters(
+                        drawingTool = DrawingTool.PENCIL,
+                        color = Color.Blue,
+                        strokeWidth = 20f,
+                    ),
+                    showColorPalette = false,
                 ),
             ),
             frames = listOf(
@@ -38,19 +42,27 @@ class MainViewModel : ViewModel() {
      * We need this property separately from [_appState] because
      * [_appState] takes significant time to update and causes blinking of drawn lines.
      */
-    private val _currentFrameDrawnPaths: SnapshotStateList<Path> = mutableStateListOf()
-    val currentFrameDrawnPaths: List<Path> = _currentFrameDrawnPaths
+    private val _currentFrameDrawnPaths: SnapshotStateList<PathWithParameters> = mutableStateListOf()
+    val currentFrameDrawnPaths: List<PathWithParameters> = _currentFrameDrawnPaths
 
     fun onPathDrawn(path: Path) {
-        _currentFrameDrawnPaths.add(path)
         _appState.update { currentState ->
+            val canvasScreen = currentState.currentScreen as SketchimatorScreen.Canvas
+            if (canvasScreen.parameters.drawingTool == DrawingTool.ERASER && currentFrameDrawnPaths.isEmpty()) {
+                return@update currentState
+            }
+            val pathWithParameters = PathWithParameters(
+                path = path,
+                parameters = canvasScreen.parameters,
+            )
+            _currentFrameDrawnPaths.add(pathWithParameters)
+            clearUndonePaths()
             currentState.copyWithCurrentFrameChanged { currentFrame ->
                 currentFrame.copy(
                     drawnPaths = currentFrameDrawnPaths.toList(),
                 )
             }
         }
-        clearUndonePaths()
     }
 
     fun onUndoActionClick() {
@@ -155,7 +167,25 @@ class MainViewModel : ViewModel() {
             val screenStack = currentState.screenStack
             val canvas = screenStack.last() as SketchimatorScreen.Canvas
             currentState.copy(
-                screenStack = screenStack.dropLast(1) + canvas.copy(drawingTool = tool)
+                screenStack = screenStack.dropLast(1) + canvas.copy(parameters = canvas.parameters.copy(drawingTool = tool))
+            )
+        }
+    }
+
+    fun onPaletteClicked() {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(showColorPalette = true,
+                    parameters = canvas.parameters.copy(color = listOf(
+                        Color.Blue,
+                        Color.Green,
+                        Color.Yellow,
+                        Color.Magenta,
+                        Color.Cyan,
+                        Color.Red,
+                    ).random()))
             )
         }
     }
@@ -201,16 +231,31 @@ data class AppState(
 
 @Immutable
 data class Frame(
-    val drawnPaths: List<Path>,
-    val undonePaths: List<Path>,
+    val drawnPaths: List<PathWithParameters>,
+    val undonePaths: List<PathWithParameters>,
+)
+
+@Immutable
+data class DrawParameters(
+    val drawingTool: DrawingTool,
+    val color: Color,
+    val strokeWidth: Float,
+) {
+    val alpha: Float = color.alpha
+}
+
+@Immutable
+data class PathWithParameters(
+    val path: Path,
+    val parameters: DrawParameters,
 )
 
 sealed class SketchimatorScreen {
 
     @Immutable
     data class Canvas(
-        val drawingTool: DrawingTool,
-        val color: Color,
+        val parameters: DrawParameters,
+        val showColorPalette: Boolean = false,
     ) : SketchimatorScreen()
 
     @Immutable
