@@ -15,4 +15,5 @@ data class BottomBarListener(
     val onPencilClicked: () -> Unit,
     val onEraserClicked: () -> Unit,
     val onColorPaletteClicked: () -> Unit,
+    val onColorSelected: (Color?) -> Unit,
 )

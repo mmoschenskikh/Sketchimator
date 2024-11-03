@@ -36,6 +36,12 @@ fun BottomBar(
             .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.systemBars),
     ) {
+        if (vm.showColorPalette) {
+            ColorPalette(
+                onColorSelected = listener.onColorSelected
+            )
+        }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(DimenTokens.x2, Alignment.CenterHorizontally),
@@ -78,7 +84,7 @@ fun BottomBar(
 private fun BottomBarPreview() {
     SketchimatorTheme {
         var selectedTool by remember { mutableStateOf(DrawingTool.PENCIL) }
-        var showColorPalette by remember { mutableStateOf(true) }
+        var showColorPalette by remember { mutableStateOf(false) }
         BottomBar(
             vm = BottomBarVm(
                 selectedTool = selectedTool,
@@ -89,6 +95,7 @@ private fun BottomBarPreview() {
                 onPencilClicked = { selectedTool = DrawingTool.PENCIL },
                 onEraserClicked = { selectedTool = DrawingTool.ERASER },
                 onColorPaletteClicked = { showColorPalette = true },
+                onColorSelected = { showColorPalette = false },
             ),
         )
     }

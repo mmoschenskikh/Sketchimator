@@ -16,4 +16,5 @@ object DimenTokens {
     val x6 = base * 6 // 24
     val x7 = base * 7 // 28
     val x8 = base * 8 // 32
+    val x16 = base * 16 // 64
 }

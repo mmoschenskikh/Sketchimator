@@ -8,9 +8,13 @@ import ru.maxultra.sketchimator.core_ui.theme.tokens.ShapeTokens
 @Immutable
 data class SketchimatorShapes(
     val extraLarge: CornerBasedShape = ShapeTokens.CornerExtraLarge,
+    val medium: CornerBasedShape = ShapeTokens.CornerMedium,
+    val small: CornerBasedShape = ShapeTokens.CornerSmall,
 ) {
-    val None = ShapeTokens.CornerNone
-    val Full = ShapeTokens.CornerFull
+    companion object {
+        val None = ShapeTokens.CornerNone
+        val Full = ShapeTokens.CornerFull
+    }
 }
 
 internal val LocalSketchimatorShapes = staticCompositionLocalOf { SketchimatorShapes() }

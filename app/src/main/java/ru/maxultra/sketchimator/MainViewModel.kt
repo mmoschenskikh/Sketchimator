@@ -23,7 +23,6 @@ class MainViewModel : ViewModel() {
                         color = Color.Blue,
                         strokeWidth = 20f,
                     ),
-                    showColorPalette = false,
                 ),
             ),
             frames = listOf(
@@ -121,7 +120,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun onPauseAnimationClick() {
-    //                                        if (isPlaying) {
+        //                                        if (isPlaying) {
 //                                            isPlaying = false
 //                                            playJob?.cancel()
 //                                            playJob = null
@@ -133,7 +132,7 @@ class MainViewModel : ViewModel() {
 //                                        }
 //
 
-}
+    }
 
     fun onStartAnimationClick() {
         //                                        if (isPlaying.not()) {
@@ -177,15 +176,29 @@ class MainViewModel : ViewModel() {
             val screenStack = currentState.screenStack
             val canvas = screenStack.last() as SketchimatorScreen.Canvas
             currentState.copy(
-                screenStack = screenStack.dropLast(1) + canvas.copy(showColorPalette = true,
-                    parameters = canvas.parameters.copy(color = listOf(
-                        Color.Blue,
-                        Color.Green,
-                        Color.Yellow,
-                        Color.Magenta,
-                        Color.Cyan,
-                        Color.Red,
-                    ).random()))
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    previousDrawingTool = canvas.parameters.drawingTool,
+                    showColorPalette = true,
+                    parameters = canvas.parameters.copy(
+                        drawingTool = DrawingTool.NONE,
+                    )
+                )
+            )
+        }
+    }
+
+    fun onColorSelected(color: Color?) {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    showColorPalette = false,
+                    parameters = canvas.parameters.copy(
+                        drawingTool = canvas.previousDrawingTool,
+                        color = color ?: canvas.parameters.color,
+                    )
+                )
             )
         }
     }
@@ -255,11 +268,13 @@ sealed class SketchimatorScreen {
     @Immutable
     data class Canvas(
         val parameters: DrawParameters,
+        val previousDrawingTool: DrawingTool = DrawingTool.NONE,
         val showColorPalette: Boolean = false,
     ) : SketchimatorScreen()
 
     @Immutable
     data object AnimationPlayer : SketchimatorScreen()
+
     @Immutable
     data object FrameList : SketchimatorScreen()
 }

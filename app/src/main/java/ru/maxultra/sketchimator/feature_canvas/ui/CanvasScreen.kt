@@ -83,6 +83,7 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
                     onPencilClicked = { viewModel.onToolClicked(DrawingTool.PENCIL) },
                     onEraserClicked = { viewModel.onToolClicked(DrawingTool.ERASER) },
                     onColorPaletteClicked = { viewModel.onPaletteClicked() },
+                    onColorSelected = { viewModel.onColorSelected(it) },
                 ),
                 modifier = Modifier
                     .padding(
@@ -162,33 +163,35 @@ private fun WorkingArea(
                 }
             }
     ) {
-        when (status) {
-            DrawingStatus.DOWN -> {
-                currentlyDrawingPath.moveTo(currentPosition.x, currentPosition.y)
-                previousPosition = currentPosition
-            }
-
-            DrawingStatus.MOVE -> {
-                currentlyDrawingPath.quadraticTo(
-                    previousPosition.x,
-                    previousPosition.y,
-                    (previousPosition.x + currentPosition.x) / 2,
-                    (previousPosition.y + currentPosition.y) / 2
-                )
-                previousPosition = currentPosition
-            }
-
-            DrawingStatus.UP -> {
-                if (currentlyDrawingPath.isEmpty.not() && currentlyDrawingPath.getBounds().size != INVISIBLE_PATH_SIZE) {
-                    onPathAdded(currentlyDrawingPath)
+        if (drawParameters.drawingTool != DrawingTool.NONE) {
+            when (status) {
+                DrawingStatus.DOWN -> {
+                    currentlyDrawingPath.moveTo(currentPosition.x, currentPosition.y)
+                    previousPosition = currentPosition
                 }
-                currentlyDrawingPath = Path()
-                currentPosition = Offset.Unspecified
-                previousPosition = Offset.Unspecified
-                status = DrawingStatus.IDLE
-            }
 
-            DrawingStatus.IDLE -> Unit
+                DrawingStatus.MOVE -> {
+                    currentlyDrawingPath.quadraticTo(
+                        previousPosition.x,
+                        previousPosition.y,
+                        (previousPosition.x + currentPosition.x) / 2,
+                        (previousPosition.y + currentPosition.y) / 2
+                    )
+                    previousPosition = currentPosition
+                }
+
+                DrawingStatus.UP -> {
+                    if (currentlyDrawingPath.isEmpty.not() && currentlyDrawingPath.getBounds().size != INVISIBLE_PATH_SIZE) {
+                        onPathAdded(currentlyDrawingPath)
+                    }
+                    currentlyDrawingPath = Path()
+                    currentPosition = Offset.Unspecified
+                    previousPosition = Offset.Unspecified
+                    status = DrawingStatus.IDLE
+                }
+
+                DrawingStatus.IDLE -> Unit
+            }
         }
         with(drawContext.canvas.nativeCanvas) {
             val previousFrameLayer = saveLayer(null, null)
@@ -235,6 +238,8 @@ private fun DrawScope.drawPathWithParameters(
                 blendMode = BlendMode.Clear,
             )
         }
+
+        DrawingTool.NONE -> Unit
     }
 }
 
