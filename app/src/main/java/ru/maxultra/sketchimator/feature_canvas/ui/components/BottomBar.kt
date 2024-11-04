@@ -51,31 +51,34 @@ fun BottomBar(
             IconButton(
                 icon = R.drawable.ic_pencil_32,
                 onClick = listener.onPencilClicked,
-                iconColor = if (vm.selectedTool == DrawingTool.PENCIL) {
-                    SketchimatorTheme.colorScheme.highlight
-                } else {
-                    SketchimatorTheme.colorScheme.onBackground
+                iconColor = when {
+                    vm.isBottomBarEnabled.not() -> SketchimatorTheme.colorScheme.onBackgroundSecondary
+                    vm.selectedTool == DrawingTool.PENCIL -> SketchimatorTheme.colorScheme.highlight
+                    else -> SketchimatorTheme.colorScheme.onBackground
                 },
+                enabled = vm.isBottomBarEnabled,
             )
             IconButton(
                 icon = R.drawable.ic_erase_32,
                 onClick = listener.onEraserClicked,
-                iconColor = if (vm.selectedTool == DrawingTool.ERASER) {
-                    SketchimatorTheme.colorScheme.highlight
-                } else {
-                    SketchimatorTheme.colorScheme.onBackground
+                iconColor = when {
+                    vm.isBottomBarEnabled.not() -> SketchimatorTheme.colorScheme.onBackgroundSecondary
+                    vm.selectedTool == DrawingTool.ERASER -> SketchimatorTheme.colorScheme.highlight
+                    else -> SketchimatorTheme.colorScheme.onBackground
                 },
+                enabled = vm.isBottomBarEnabled,
             )
             IconButton(
                 painter = OutlinedCircleColorPainter(
                     color = vm.currentColor,
-                    outlineColor = if (vm.showColorPalette) {
+                    outlineColor = if (vm.showColorPalette && vm.isBottomBarEnabled) {
                         SketchimatorTheme.colorScheme.highlight
                     } else {
                         Color.Unspecified
                     },
                 ),
                 onClick = listener.onColorPaletteClicked,
+                enabled = vm.isBottomBarEnabled,
             )
         }
     }

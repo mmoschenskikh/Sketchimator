@@ -9,6 +9,7 @@ data class BottomBarVm(
     val selectedTool: DrawingTool?,
     val currentColor: Color,
     val showColorPalette: Boolean,
+    val isBottomBarEnabled: Boolean = true,
 )
 
 @Immutable

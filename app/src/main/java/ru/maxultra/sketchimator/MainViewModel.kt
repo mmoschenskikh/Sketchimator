@@ -6,10 +6,15 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
 
 class MainViewModel : ViewModel() {
@@ -41,6 +46,9 @@ class MainViewModel : ViewModel() {
     )
     val appState: StateFlow<AppState> = _appState.asStateFlow()
 
+    private val currentState: AppState
+        get() = appState.value
+
     /**
      * List that contains all paths drawn in current frame.
      *
@@ -49,6 +57,8 @@ class MainViewModel : ViewModel() {
      */
     private val _currentFrameDrawnPaths: SnapshotStateList<PathWithParameters> = mutableStateListOf()
     val currentFrameDrawnPaths: List<PathWithParameters> = _currentFrameDrawnPaths
+
+    private var animationPlayerJob: Job? = null
 
     fun onPathDrawn(path: Path) {
         _appState.update { currentState ->
@@ -126,37 +136,60 @@ class MainViewModel : ViewModel() {
     }
 
     fun onPauseAnimationClick() {
-//        if (isPlaying) {
-//            isPlaying = false
-//            playJob?.cancel()
-//            playJob = null
-//            val frame = frames.removeAt(frames.lastIndex)
-//            paths.clear()
-//            paths.addAll(frame.first)
-//            undonePaths.clear()
-//            undonePaths.addAll(frame.second)
-//        }
+        val state = currentState
+        if (state.isPlaying.not()) return
+        animationPlayerJob?.cancel()
+        animationPlayerJob = null
+        _currentFrameDrawnPaths.clear()
+        _currentFrameDrawnPaths.addAll(state.currentFrame.drawnPaths)
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    isPlaying = false,
+                    parameters = canvas.parameters.copy(
+                        drawingTool = canvas.previousDrawingTool,
+                    ),
+                    previousDrawingTool = DrawingTool.NONE,
+                )
+            )
+        }
     }
 
     fun onStartAnimationClick() {
-//        if (isPlaying.not()) {
-//            isPlaying = true
-//            playJob = lifecycleScope.launch {
-//                frames.add(paths.toList() to undonePaths.toList())
-//                val allFrames = frames.map { it.first }
-//                while (isActive) {
-//                    allFrames.forEach { currentFrame ->
-//                        paths.clear()
-//                        paths.addAll(currentFrame)
-//                        delay(100L)
-//                    }
-//                }
-//
-//            }
-//        }
+        val state = currentState
+        if (state.isPlaying) return
+        animationPlayerJob = viewModelScope.launch {
+            while (isActive) {
+                state.frames.forEach { frame ->
+                    _currentFrameDrawnPaths.clear()
+                    _currentFrameDrawnPaths.addAll(frame.drawnPaths)
+                    delay(state.frameTimeMs)
+                }
+            }
+        }
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    isPlaying = true,
+                    previousDrawingTool = canvas.parameters.drawingTool,
+                    parameters = canvas.parameters.copy(
+                        drawingTool = DrawingTool.NONE,
+                    ),
+                )
+            )
+        }
     }
 
     fun onBackClick() {
+        val state = currentState
+        if (state.isPlaying) {
+            onPauseAnimationClick()
+            return
+        }
         _appState.update { currentState ->
             currentState.copy(
                 screenStack = currentState.screenStack.dropLast(1),
@@ -206,6 +239,7 @@ class MainViewModel : ViewModel() {
                     } else {
                         canvas.previousColors
                     },
+                    previousDrawingTool = DrawingTool.NONE,
                 )
             )
         }
@@ -229,7 +263,7 @@ data class AppState(
         get() = screenStack.last()
 
     val canHandleBackClick: Boolean
-        get() = screenStack.size > 1
+        get() = screenStack.size > 1 || isPlaying
 
     val currentFrame: Frame
         get() = frames.last()
@@ -249,6 +283,12 @@ data class AppState(
         )
     }
 }
+
+val AppState.isPlaying: Boolean
+    get() = (currentScreen as? SketchimatorScreen.Canvas)?.isPlaying ?: false
+
+val AppState.frameTimeMs: Long
+    get() = (currentScreen as? SketchimatorScreen.Canvas)?.frameTimeMs ?: DEFAULT_FRAME_TIME_MS
 
 @Immutable
 data class Frame(
@@ -279,13 +319,13 @@ sealed class SketchimatorScreen {
         val previousColors: List<Color>,
         val previousDrawingTool: DrawingTool = DrawingTool.NONE,
         val showColorPalette: Boolean = false,
+        val isPlaying: Boolean = false,
+        val frameTimeMs: Long = DEFAULT_FRAME_TIME_MS,
     ) : SketchimatorScreen()
-
-    @Immutable
-    data object AnimationPlayer : SketchimatorScreen()
 
     @Immutable
     data object FrameList : SketchimatorScreen()
 }
 
 private const val PREVIOUS_COLORS_LIMIT = 4
+private const val DEFAULT_FRAME_TIME_MS = 100L

@@ -31,9 +31,6 @@ class MainActivity : ComponentActivity() {
 
                 when (state.currentScreen) {
                     is SketchimatorScreen.Canvas -> CanvasScreen()
-                    is SketchimatorScreen.AnimationPlayer -> {
-
-                    }
                     is SketchimatorScreen.FrameList -> FrameListScreen()
                 }
             }

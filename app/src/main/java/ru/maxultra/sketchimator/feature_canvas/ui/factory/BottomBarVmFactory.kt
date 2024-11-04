@@ -8,4 +8,5 @@ fun SketchimatorScreen.Canvas.toBottomBarVm(): BottomBarVm = BottomBarVm(
     selectedTool = parameters.drawingTool.takeIf { showColorPalette.not() },
     currentColor = parameters.color,
     showColorPalette = showColorPalette,
+    isBottomBarEnabled = isPlaying.not(),
 )

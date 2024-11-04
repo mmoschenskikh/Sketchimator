@@ -19,6 +19,7 @@ import ru.maxultra.sketchimator.feature_canvas.ui.factory.toTopBarVm
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.BottomBarListener
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarListener
+import ru.maxultra.sketchimator.isPlaying
 
 
 @Composable
@@ -69,7 +70,7 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
             innerPadding = innerPadding,
             drawParameters = screen.parameters,
             currentFramePaths = viewModel.currentFrameDrawnPaths,
-            previousFramePaths = state.previousFrame?.drawnPaths,
+            previousFramePaths = state.previousFrame?.drawnPaths?.takeIf { state.isPlaying.not() },
             onPathAdded = viewModel::onPathDrawn,
         )
     }
