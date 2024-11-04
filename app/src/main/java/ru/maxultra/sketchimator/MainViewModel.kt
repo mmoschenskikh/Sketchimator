@@ -160,11 +160,11 @@ class MainViewModel : ViewModel() {
         val frames = MovingTriangleGenerator(
             currentState.workingAreaSize,
             (currentState.currentScreen as SketchimatorScreen.Canvas).parameters,
-        ).generate(15)
+        ).generate(100000)
         _currentFrameDrawnPaths.clear()
         _appState.update { currentState ->
             currentState.copy(
-                frames = frames,
+                frames = currentState.frames + frames,
             )
         }
         _currentFrameDrawnPaths.addAll(currentState.currentFrame.drawnPaths)
