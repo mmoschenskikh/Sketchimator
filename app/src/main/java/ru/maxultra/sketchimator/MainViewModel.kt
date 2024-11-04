@@ -169,15 +169,7 @@ class MainViewModel : ViewModel() {
     fun onStartAnimationClick() {
         val state = currentState
         if (state.isPlaying) return
-        animationPlayerJob = viewModelScope.launch {
-            while (isActive) {
-                state.frames.forEach { frame ->
-                    _currentFrameDrawnPaths.clear()
-                    _currentFrameDrawnPaths.addAll(frame.drawnPaths)
-                    delay(currentState.frameTimeMs)
-                }
-            }
-        }
+        animationPlayerJob = buildAnimationPlayerJob(state)
         _appState.update { currentState ->
             val screenStack = currentState.screenStack
             val canvas = screenStack.last() as SketchimatorScreen.Canvas
@@ -190,6 +182,16 @@ class MainViewModel : ViewModel() {
                     ),
                 )
             )
+        }
+    }
+
+    private fun buildAnimationPlayerJob(state: AppState): Job = viewModelScope.launch {
+        while (isActive) {
+            state.frames.forEach { frame ->
+                _currentFrameDrawnPaths.clear()
+                _currentFrameDrawnPaths.addAll(frame.drawnPaths)
+                delay(currentState.frameTimeMs)
+            }
         }
     }
 
@@ -288,6 +290,17 @@ class MainViewModel : ViewModel() {
                 )
             )
         }
+    }
+
+    fun onActivityResume() {
+        val state = currentState
+        if (state.isPlaying.not() || animationPlayerJob != null) return
+        animationPlayerJob = buildAnimationPlayerJob(state)
+    }
+
+    fun onActivityPause() {
+        animationPlayerJob?.cancel()
+        animationPlayerJob = null
     }
 
     private fun clearUndonePaths() {
