@@ -8,9 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -22,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.window.Dialog
 import ru.maxultra.sketchimator.R
 import ru.maxultra.sketchimator.core_ui.core_components.Surface
@@ -64,7 +66,8 @@ fun GenerationSettingsDialog(
                         text = stringResource(R.string.frame_count),
                     )
                     TextField(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f),
                         value = frameNumber.toString(),
                         onValueChange = { value ->
                             val longValue = value.toLongOrNull()
@@ -72,12 +75,24 @@ fun GenerationSettingsDialog(
                         },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
+                        ),
+                        singleLine = true,
+                        colors = TextFieldDefaults.textFieldColors(
+                            textColor = SketchimatorTheme.colorScheme.onBackground,
+                            backgroundColor = SketchimatorTheme.colorScheme.fill,
                         )
                     )
                 }
                 Spacer(Modifier.height(DimenTokens.x4))
-                vm.generationOptions.forEach { option ->
-                    HorizontalDivider()
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.generation_patterns),
+                    style = SketchimatorTheme.typography.headline4.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(DimenTokens.x4))
+                vm.generationOptions.fastForEachIndexed { index, option ->
+                        HorizontalDivider()
                     GeneratorOption(
                         name = option.name,
                         onClick = { listener.onGenerationOptionChosen.invoke(option.type, frameNumber) },

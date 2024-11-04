@@ -12,6 +12,7 @@ data class SketchimatorColorScheme(
     val onBackground: Color,
     val onBackgroundSecondary: Color,
     val highlight: Color,
+    val fill: Color,
 )
 
 fun sketchimatorLightColors() = SketchimatorColorScheme(
@@ -19,6 +20,7 @@ fun sketchimatorLightColors() = SketchimatorColorScheme(
     onBackground = ColorLightTokens.OnBackground,
     onBackgroundSecondary = ColorLightTokens.OnBackgroundSecondary,
     highlight = ColorLightTokens.Highlight,
+    fill = ColorLightTokens.Fill,
 )
 
 fun sketchimatorDarkColors() = SketchimatorColorScheme(
@@ -26,6 +28,7 @@ fun sketchimatorDarkColors() = SketchimatorColorScheme(
     onBackground = ColorDarkTokens.OnBackground,
     onBackgroundSecondary = ColorDarkTokens.OnBackgroundSecondary,
     highlight = ColorDarkTokens.Highlight,
+    fill = ColorDarkTokens.Fill,
 )
 
 internal val LocalSketchimatorColorScheme = staticCompositionLocalOf { sketchimatorLightColors() }

@@ -16,6 +16,7 @@
 
     <string name="generator_moving_triangle">Moving triangle</string>
     <string name="generator_dvd_screensaver">DVD screensaver</string>
-    <string name="generation_settings_title">Generation settings</string>
+    <string name="generation_settings_title">Generation parameters</string>
+    <string name="generation_patterns">Generation patterns</string>
 
 </resources>
