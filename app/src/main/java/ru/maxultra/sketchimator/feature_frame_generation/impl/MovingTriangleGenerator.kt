@@ -12,6 +12,9 @@ import ru.maxultra.sketchimator.Frame
 import ru.maxultra.sketchimator.PathWithParameters
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
 import ru.maxultra.sketchimator.feature_frame_generation.FrameSequenceGenerator
+import ru.maxultra.sketchimator.util.PathUtils.buildTrianglePath
+import ru.maxultra.sketchimator.util.PathUtils.isOutOfBoundsByX
+import ru.maxultra.sketchimator.util.PathUtils.isOutOfBoundsByY
 import kotlin.math.sign
 import kotlin.random.Random
 
@@ -62,37 +65,7 @@ class MovingTriangleGenerator(
         return frames.toList()
     }
 
-    private fun Path.isOutOfBoundsByX(
-        frameSize: IntSize,
-        offsetX: Float,
-    ): Boolean = when {
-        offsetX < 0 -> this.getBounds().left + offsetX <= 0 // moving left
-        offsetX > 0 -> this.getBounds().right + offsetX >= frameSize.width // moving right
-        else -> false
-    }
-
-    private fun Path.isOutOfBoundsByY(
-        frameSize: IntSize,
-        offsetY: Float,
-    ): Boolean = when {
-        offsetY < 0 -> this.getBounds().top + offsetY <= 0 // moving up
-        offsetY > 0 -> this.getBounds().bottom + offsetY >= frameSize.height // moving down
-        else -> false
-    }
-
     private fun getRandomOffset(): Float = Random.nextInt(MIN_OFFSET_PER_FRAME, MAX_OFFSET_PER_FRAME).toFloat()
-
-    private fun buildTrianglePath(
-        firstPoint: Offset,
-        secondPoint: Offset,
-        thirdPoint: Offset,
-    ): Path = Path().apply {
-        moveTo(firstPoint.x, firstPoint.y)
-        lineTo(secondPoint.x, secondPoint.y)
-        lineTo(thirdPoint.x, thirdPoint.y)
-        lineTo(firstPoint.x, firstPoint.y)
-        close()
-    }
 }
 
 private const val MIN_OFFSET_PER_FRAME = 10
