@@ -124,6 +124,14 @@ class MainViewModel : ViewModel() {
                 .toMutableList()
                 .apply { removeAt(index) }
                 .toList()
+                .ifEmpty {
+                    listOf(
+                        Frame(
+                            drawnPaths = emptyList(),
+                            undonePaths = emptyList(),
+                        )
+                    )
+                }
 
             currentState.copy(
                 frames = newFrames,
@@ -212,6 +220,8 @@ class MainViewModel : ViewModel() {
                 currentFrameIndex = newFrames.lastIndex,
             )
         }
+        _currentFrameDrawnPaths.clear()
+        _currentFrameDrawnPaths.addAll(currentState.currentFrame.drawnPaths)
     }
 
     fun onCopyCurrentFrameClick() {
