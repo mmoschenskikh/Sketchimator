@@ -1,5 +1,6 @@
 package ru.maxultra.sketchimator.feature_frame_list.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,12 +27,10 @@ fun FrameListScreen(viewModel: MainViewModel = viewModel()) {
     val appState by viewModel.appState.collectAsState()
     val frames = appState.frames
     val originalSize = appState.workingAreaSize
-    val originalWidthPx = with(LocalDensity.current) { originalSize.width.dp.toPx() }
-    val originalHeightPx = with(LocalDensity.current) { originalSize.height.dp.toPx() }
-    val aspectRatio = originalWidthPx / originalHeightPx
+    val aspectRatio = originalSize.width.toFloat() / originalSize.height
 
-    val framePreviewWidthPx = with(LocalDensity.current) { FRAME_PREVIEW_WIDTH.toPx() }
-    val scaleFactor = framePreviewWidthPx / originalWidthPx
+    val framePreviewWidthPx = with(LocalDensity.current) { (FRAME_PREVIEW_WIDTH - DimenTokens.x4).toPx() } // DimenTokens.x4 is about getting canvas paddings into account
+    val scaleFactor = framePreviewWidthPx / originalSize.width
     Scaffold(
         topBar = {
             TopBar(
@@ -59,7 +58,7 @@ fun FrameListScreen(viewModel: MainViewModel = viewModel()) {
                     SingleFrameItem(
                         frame = frame,
                         index = index,
-                        height = FRAME_PREVIEW_WIDTH * aspectRatio,
+                        height = FRAME_PREVIEW_WIDTH / aspectRatio,
                         frameAspectRatio = aspectRatio,
                         scaleFactor = scaleFactor,
                         listener = SingleFrameItemListener(

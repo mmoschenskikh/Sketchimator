@@ -1,5 +1,6 @@
 package ru.maxultra.sketchimator.feature_frame_list.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.copy
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -143,5 +145,5 @@ private fun SingleFrameItemPreview() {
     }
 }
 
-val FRAME_PREVIEW_WIDTH = DimenTokens.x44
+val FRAME_PREVIEW_WIDTH = DimenTokens.x20
 private const val ENABLE_ADDITIONAL_CONTROLS_FOR_FRAME_LIST = true
