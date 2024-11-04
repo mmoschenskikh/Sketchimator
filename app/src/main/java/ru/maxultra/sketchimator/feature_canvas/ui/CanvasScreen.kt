@@ -60,6 +60,9 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
                     onAnimationSettingsClicked = { viewModel.onAnimationSettingsClicked() },
                     onDismissAnimationSettings = { viewModel.onDismissAnimationSettings() },
                     onFrameRateChanged = { viewModel.onFrameRateChanged(it) },
+                    onBrushSettingsClicked = { viewModel.onBrushSettingsClicked() },
+                    onDismissBrushSettings = { viewModel.onDismissBrushSettings() },
+                    onBrushWidthChanged = { viewModel.onBrushWidthChanged(it) },
                 ),
                 modifier = Modifier
                     .padding(

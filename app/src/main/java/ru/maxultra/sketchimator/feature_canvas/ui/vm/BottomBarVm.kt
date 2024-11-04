@@ -11,6 +11,8 @@ sealed class BottomBarVm {
         val selectedTool: DrawingTool?,
         val currentColor: Color,
         val showColorPalette: Boolean,
+        val currentWidth: Float,
+        val showBrushSettings: Boolean,
     ) : BottomBarVm()
 
     @Immutable
@@ -30,4 +32,7 @@ data class BottomBarListener(
     val onAnimationSettingsClicked: () -> Unit,
     val onDismissAnimationSettings: () -> Unit,
     val onFrameRateChanged: (fps: Float) -> Unit,
+    val onBrushSettingsClicked: () -> Unit,
+    val onDismissBrushSettings: () -> Unit,
+    val onBrushWidthChanged: (width: Float) -> Unit,
 )

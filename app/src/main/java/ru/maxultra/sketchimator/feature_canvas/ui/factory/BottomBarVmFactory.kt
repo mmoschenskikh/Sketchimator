@@ -13,8 +13,10 @@ fun SketchimatorScreen.Canvas.toBottomBarVm(): BottomBarVm =
     } else {
         BottomBarVm.DrawingTools(
             previousColors = previousColors,
-            selectedTool = parameters.drawingTool.takeIf { showColorPalette.not() },
+            selectedTool = parameters.drawingTool.takeIf { showColorPalette.not() && showBrushSettings.not() },
             currentColor = parameters.color,
-            showColorPalette = showColorPalette,
+            showColorPalette = showColorPalette && showBrushSettings.not(),
+            showBrushSettings = showBrushSettings && showColorPalette.not(),
+            currentWidth = parameters.strokeWidth,
         )
     }

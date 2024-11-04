@@ -48,6 +48,13 @@ private fun DrawingTools(vm: BottomBarVm.DrawingTools, listener: BottomBarListen
             onColorSelected = listener.onColorSelected,
         )
     }
+    if (vm.showBrushSettings) {
+        BrushSettings(
+            width = vm.currentWidth,
+            onWidthChanged = listener.onBrushWidthChanged,
+            onDismiss = listener.onDismissBrushSettings,
+        )
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(DimenTokens.x2, Alignment.CenterHorizontally),
@@ -56,6 +63,15 @@ private fun DrawingTools(vm: BottomBarVm.DrawingTools, listener: BottomBarListen
             icon = R.drawable.ic_pencil_32,
             onClick = listener.onPencilClicked,
             iconColor = if (vm.selectedTool == DrawingTool.PENCIL) {
+                SketchimatorTheme.colorScheme.highlight
+            } else {
+                SketchimatorTheme.colorScheme.onBackground
+            },
+        )
+        IconButton(
+            icon = R.drawable.ic_brush_32,
+            onClick = listener.onBrushSettingsClicked,
+            iconColor = if (vm.showBrushSettings) {
                 SketchimatorTheme.colorScheme.highlight
             } else {
                 SketchimatorTheme.colorScheme.onBackground
@@ -119,6 +135,8 @@ private fun BottomBarDrawingToolsPreview() {
                 selectedTool = DrawingTool.PENCIL,
                 currentColor = Color.Blue,
                 showColorPalette = false,
+                showBrushSettings = false,
+                currentWidth = 10f,
             ),
             listener = BottomBarListener(
                 onPencilClicked = {},
@@ -128,6 +146,9 @@ private fun BottomBarDrawingToolsPreview() {
                 onAnimationSettingsClicked = {},
                 onDismissAnimationSettings = {},
                 onFrameRateChanged = {},
+                onBrushSettingsClicked = {},
+                onDismissBrushSettings = {},
+                onBrushWidthChanged = {},
             ),
         )
     }
@@ -150,6 +171,9 @@ private fun BottomBarFrameRateControlsPreview() {
                 onAnimationSettingsClicked = {},
                 onDismissAnimationSettings = {},
                 onFrameRateChanged = {},
+                onBrushSettingsClicked = {},
+                onDismissBrushSettings = {},
+                onBrushWidthChanged = {},
             ),
         )
     }

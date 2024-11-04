@@ -292,6 +292,44 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun onBrushSettingsClicked() {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    showBrushSettings = true,
+                )
+            )
+        }
+    }
+
+    fun onDismissBrushSettings() {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    showBrushSettings = false,
+                )
+            )
+        }
+    }
+
+    fun onBrushWidthChanged(width: Float) {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    parameters = canvas.parameters.copy(
+                        strokeWidth = width,
+                    )
+                )
+            )
+        }
+    }
+
     fun onActivityResume() {
         val state = currentState
         if (state.isPlaying.not() || animationPlayerJob != null) return
@@ -377,6 +415,7 @@ sealed class SketchimatorScreen {
         val previousColors: List<Color>,
         val previousDrawingTool: DrawingTool = DrawingTool.NONE,
         val showAnimationSettings: Boolean = false,
+        val showBrushSettings: Boolean = false,
         val showColorPalette: Boolean = false,
         val isPlaying: Boolean = false,
         val frameTimeMs: Long = FrameRateUtils.DEFAULT_FRAME_TIME_MS,

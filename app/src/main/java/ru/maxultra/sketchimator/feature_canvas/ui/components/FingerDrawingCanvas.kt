@@ -16,6 +16,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
@@ -110,6 +112,11 @@ private fun DrawScope.drawPathWithParameters(
     path: PathWithParameters,
     drawingPreviousFrame: Boolean = false,
 ) {
+    val stroke = Stroke(
+        width = path.parameters.strokeWidth,
+        cap = StrokeCap.Round,
+        join = StrokeJoin.Round,
+    )
     when (path.parameters.drawingTool) {
         DrawingTool.PENCIL -> {
             val alpha = if (drawingPreviousFrame) {
@@ -121,7 +128,7 @@ private fun DrawScope.drawPathWithParameters(
                 path = path.path,
                 color = path.parameters.color,
                 alpha = alpha,
-                style = Stroke(width = path.parameters.strokeWidth),
+                style = stroke,
                 blendMode = if (drawingPreviousFrame) {
                     BlendMode.DstAtop
                 } else {
@@ -134,7 +141,7 @@ private fun DrawScope.drawPathWithParameters(
             drawPath(
                 path = path.path,
                 color = Color.Transparent,
-                style = Stroke(width = path.parameters.strokeWidth),
+                style = stroke,
                 blendMode = BlendMode.Clear,
             )
         }
