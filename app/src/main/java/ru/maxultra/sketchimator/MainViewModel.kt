@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
-import ru.maxultra.sketchimator.feature_frame_generation.impl.MovingTriangleGenerator
+import ru.maxultra.sketchimator.feature_frame_generation.generator.DvdScreenSaverGenerator
+import ru.maxultra.sketchimator.feature_frame_generation.generator.FrameSequenceGenerator
+import ru.maxultra.sketchimator.feature_frame_generation.generator.MovingTriangleGenerator
 import ru.maxultra.sketchimator.util.FrameRateUtils
 
 class MainViewModel : ViewModel() {
@@ -157,17 +159,42 @@ class MainViewModel : ViewModel() {
     }
 
     fun onGenerateFramesClick() {
-        val frames = MovingTriangleGenerator(
-            currentState.workingAreaSize,
-            (currentState.currentScreen as SketchimatorScreen.Canvas).parameters,
-        ).generate(100000)
-        _currentFrameDrawnPaths.clear()
         _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
             currentState.copy(
-                frames = currentState.frames + frames,
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    showFrameGenerationDialog = true,
+                )
             )
         }
-        _currentFrameDrawnPaths.addAll(currentState.currentFrame.drawnPaths)
+    }
+
+    fun onGenerationOptionChosen(generatorType: FrameSequenceGenerator.Type?, frameCount: Int) {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+
+            val generator = when (generatorType) {
+                FrameSequenceGenerator.Type.DVD_SCREENSAVER -> DvdScreenSaverGenerator(
+                    frameSize = currentState.workingAreaSize,
+                )
+                FrameSequenceGenerator.Type.MOVING_TRIANGLE -> MovingTriangleGenerator(
+                    frameSize = currentState.workingAreaSize,
+                    parameters = canvas.parameters,
+                )
+                null -> null
+            }
+
+            val generatedFrames = generator?.generate(frameCount) ?: emptyList()
+
+            currentState.copy(
+                frames = currentState.frames + generatedFrames,
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    showFrameGenerationDialog = false,
+                )
+            )
+        }
     }
 
     fun onCopyCurrentFrameClick() {
@@ -464,6 +491,7 @@ sealed class SketchimatorScreen {
         val showAnimationSettings: Boolean = false,
         val showBrushSettings: Boolean = false,
         val showColorPalette: Boolean = false,
+        val showFrameGenerationDialog: Boolean = false,
         val isPlaying: Boolean = false,
         val frameTimeMs: Long = FrameRateUtils.DEFAULT_FRAME_TIME_MS,
     ) : SketchimatorScreen()

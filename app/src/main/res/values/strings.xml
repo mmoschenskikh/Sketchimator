@@ -9,7 +9,13 @@
     <string name="generate_frames">Generate frames</string>
     <string name="fps">FPS</string>
     <string name="width_px">Width (px)</string>
-    <string name="frame_count">Frame count: %1$d</string>
+    <string name="frame_count_template">Frame count: %1$d</string>
+    <string name="frame_count">Frame count</string>
     <string name="remove_all">Remove all frames</string>
     <string name="frame_number">#%1$d</string>
+
+    <string name="generator_moving_triangle">Moving triangle</string>
+    <string name="generator_dvd_screensaver">DVD screensaver</string>
+    <string name="generation_settings_title">Generation settings</string>
+
 </resources>

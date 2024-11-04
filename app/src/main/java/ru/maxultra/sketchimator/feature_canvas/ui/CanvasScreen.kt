@@ -19,6 +19,9 @@ import ru.maxultra.sketchimator.feature_canvas.ui.factory.toTopBarVm
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.BottomBarListener
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.TopBarListener
+import ru.maxultra.sketchimator.feature_frame_generation.ui.components.GenerationSettingsDialog
+import ru.maxultra.sketchimator.feature_frame_generation.ui.factory.toGenerationSettingsVm
+import ru.maxultra.sketchimator.feature_frame_generation.ui.vm.GenerationSettingsListener
 import ru.maxultra.sketchimator.isPlaying
 
 
@@ -83,5 +86,13 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
             onPathAdded = viewModel::onPathDrawn,
             onSizeCalculated = viewModel::onSizeChanged,
         )
+        if (screen.showFrameGenerationDialog) {
+            GenerationSettingsDialog(
+                vm = state.toGenerationSettingsVm(),
+                listener = GenerationSettingsListener(
+                    onGenerationOptionChosen = viewModel::onGenerationOptionChosen,
+                ),
+            )
+        }
     }
 }

@@ -1,4 +1,4 @@
-package ru.maxultra.sketchimator.feature_frame_generation.impl
+package ru.maxultra.sketchimator.feature_frame_generation.generator
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -11,7 +11,6 @@ import ru.maxultra.sketchimator.DrawParameters
 import ru.maxultra.sketchimator.Frame
 import ru.maxultra.sketchimator.PathWithParameters
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
-import ru.maxultra.sketchimator.feature_frame_generation.FrameSequenceGenerator
 import ru.maxultra.sketchimator.util.PathUtils.isOutOfBoundsByX
 import ru.maxultra.sketchimator.util.PathUtils.isOutOfBoundsByY
 import kotlin.math.sign
@@ -20,6 +19,8 @@ import kotlin.random.Random
 class DvdScreenSaverGenerator(
     private val frameSize: IntSize,
 ) : FrameSequenceGenerator {
+
+    override val type = FrameSequenceGenerator.Type.DVD_SCREENSAVER
 
     private val parameters = DrawParameters(
         color = Color.Black,

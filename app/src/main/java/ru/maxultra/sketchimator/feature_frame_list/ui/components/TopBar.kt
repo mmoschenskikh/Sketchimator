@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.TextButton
@@ -16,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import ru.maxultra.sketchimator.R
 import ru.maxultra.sketchimator.core_ui.core_components.Surface
 import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
-import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
 import ru.maxultra.sketchimator.core_ui.theme.tokens.PaletteTokens
 import ru.maxultra.sketchimator.core_ui.util.DayNightPreview
 import ru.maxultra.sketchimator.feature_frame_list.ui.vm.TopBarListener
@@ -38,7 +36,7 @@ fun TopBar(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = stringResource(R.string.frame_count, vm.frameCount),
+                text = stringResource(R.string.frame_count_template, vm.frameCount),
                 modifier = Modifier.weight(1f)
             )
             TextButton(onClick = listener.onRemoveAllClick) {
