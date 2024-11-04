@@ -13,7 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.IntSize
 import ru.maxultra.sketchimator.DrawParameters
 import ru.maxultra.sketchimator.PathWithParameters
 import ru.maxultra.sketchimator.R
@@ -31,6 +33,7 @@ fun CanvasWithBackground(
     currentFramePaths: List<PathWithParameters>,
     previousFramePaths: List<PathWithParameters>? = null,
     onPathAdded: (Path) -> Unit,
+    onSizeCalculated: (IntSize) -> Unit,
 ) {
     Surface {
         Box(
@@ -56,7 +59,8 @@ fun CanvasWithBackground(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(DimenTokens.x4)
-                    .clip(SketchimatorTheme.shapes.extraLarge),
+                    .clip(SketchimatorTheme.shapes.extraLarge)
+                    .onGloballyPositioned { coordinates -> onSizeCalculated.invoke(coordinates.size) },
             )
             if (currentFrameNumber != null) {
                 Text(

@@ -108,7 +108,7 @@ fun FingerDrawingCanvas(
     }
 }
 
-private fun DrawScope.drawPathWithParameters(
+fun DrawScope.drawPathWithParameters(
     path: PathWithParameters,
     drawingPreviousFrame: Boolean = false,
 ) {

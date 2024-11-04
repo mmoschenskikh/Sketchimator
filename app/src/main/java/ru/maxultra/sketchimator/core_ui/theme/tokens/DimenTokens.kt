@@ -19,4 +19,7 @@ object DimenTokens {
     val x10 = base * 10 // 40
     val x16 = base * 16 // 64
     val x20 = base * 20 // 80
+    val x40 = base * 40 // 160
+    val x44 = base * 44 // 164
+    val x64 = base * 64 // 256
 }

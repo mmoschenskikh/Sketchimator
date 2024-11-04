@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
@@ -61,6 +62,14 @@ class MainViewModel : ViewModel() {
 
     private var animationPlayerJob: Job? = null
 
+    fun onSizeChanged(size: IntSize) {
+        _appState.update { currentState ->
+            currentState.copy(
+                workingAreaSize = size,
+            )
+        }
+    }
+
     fun onPathDrawn(path: Path) {
         _appState.update { currentState ->
             val canvasScreen = currentState.currentScreen as SketchimatorScreen.Canvas
@@ -114,6 +123,10 @@ class MainViewModel : ViewModel() {
         }
         _currentFrameDrawnPaths.clear()
         _currentFrameDrawnPaths.addAll(appState.value.currentFrame.drawnPaths)
+    }
+
+    fun onRemoveFrameClick(index: Int) {
+        // TODO
     }
 
     fun onAddNewFrameClick() {
@@ -330,6 +343,10 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun onFrameChosen(index: Int) {
+        // TODO
+    }
+
     fun onActivityResume() {
         val state = currentState
         if (state.isPlaying.not() || animationPlayerJob != null) return
@@ -354,6 +371,7 @@ class MainViewModel : ViewModel() {
 data class AppState(
     val screenStack: List<SketchimatorScreen>,
     val frames: List<Frame>,
+    val workingAreaSize: IntSize = IntSize(0, 0),
 ) {
     val currentScreen: SketchimatorScreen
         get() = screenStack.last()

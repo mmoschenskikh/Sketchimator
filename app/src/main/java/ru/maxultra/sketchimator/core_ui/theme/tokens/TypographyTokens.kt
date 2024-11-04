@@ -10,9 +10,21 @@ import androidx.compose.ui.text.style.LineHeightStyle.Trim
 
 object TypographyTokens {
 
+    private const val FontFeatureSettingsEqualWidthAndEqualHeight = "tnum, lnum"
     private const val FontFeatureSettingsProportionalWidthAndEqualHeight = "pnum, lnum"
     private val PlatformTextStyle = PlatformTextStyle(includeFontPadding = false)
     private val LineHeightStyle = LineHeightStyle(alignment = Alignment.Bottom, trim = Trim.Both)
+
+    val Headline4 = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = TypeScaleTokens.Headline4FontSize,
+        lineHeight = TypeScaleTokens.Headline4LineHeight,
+        letterSpacing = TypeScaleTokens.Headline4Tracking,
+        platformStyle = PlatformTextStyle,
+        lineHeightStyle = LineHeightStyle,
+        fontFeatureSettings = FontFeatureSettingsEqualWidthAndEqualHeight,
+    )
 
     val Body1 = TextStyle(
         fontFamily = FontFamily.Default,

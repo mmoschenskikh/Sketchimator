@@ -80,6 +80,7 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
             currentFramePaths = viewModel.currentFrameDrawnPaths,
             previousFramePaths = state.previousFrame?.drawnPaths?.takeIf { state.isPlaying.not() },
             onPathAdded = viewModel::onPathDrawn,
+            onSizeCalculated = viewModel::onSizeChanged,
         )
     }
 }
