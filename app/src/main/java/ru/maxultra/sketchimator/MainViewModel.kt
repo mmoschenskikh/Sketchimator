@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
+import ru.maxultra.sketchimator.feature_frame_generation.impl.MovingTriangleGenerator
 import ru.maxultra.sketchimator.util.FrameRateUtils
 
 class MainViewModel : ViewModel() {
@@ -153,6 +154,20 @@ class MainViewModel : ViewModel() {
                 ),
             )
         }
+    }
+
+    fun onGenerateFramesClick() {
+        val frames = MovingTriangleGenerator(
+            currentState.workingAreaSize,
+            (currentState.currentScreen as SketchimatorScreen.Canvas).parameters,
+        ).generate(15)
+        _currentFrameDrawnPaths.clear()
+        _appState.update { currentState ->
+            currentState.copy(
+                frames = frames,
+            )
+        }
+        _currentFrameDrawnPaths.addAll(currentState.currentFrame.drawnPaths)
     }
 
     fun onCopyCurrentFrameClick() {

@@ -6,6 +6,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="add_new_frame">Add blank frame</string>
     <string name="copy_frame">Copy current frame</string>
+    <string name="generate_frames">Generate frames</string>
     <string name="fps">FPS</string>
     <string name="width_px">Width (px)</string>
     <string name="frame_count">Frame count: %1$d</string>

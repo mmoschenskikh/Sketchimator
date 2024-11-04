@@ -20,6 +20,7 @@ data class TopBarListener(
     val onRemoveFrameClick: () -> Unit,
     val onAddNewFrameClick: () -> Unit,
     val onCopyCurrentFrameClick: () -> Unit,
+    val onGenerateFramesClick: () -> Unit,
     val onOpenFrameListClick: () -> Unit,
     val onPauseAnimationClick: () -> Unit,
     val onStartAnimationClick: () -> Unit,

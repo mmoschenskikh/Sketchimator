@@ -95,6 +95,13 @@ fun TopBar(
                                 showDropdownMenu = false
                             },
                         )
+                        AddFrameDropdownItem(
+                            text = stringResource(R.string.generate_frames),
+                            onClick = {
+                                listener.onGenerateFramesClick.invoke();
+                                showDropdownMenu = false
+                            },
+                        )
                     }
                 }
                 IconButton(
@@ -156,6 +163,7 @@ private fun TopBarPreview() {
                 onRemoveFrameClick = {},
                 onAddNewFrameClick = {},
                 onCopyCurrentFrameClick = {},
+                onGenerateFramesClick = {},
                 onOpenFrameListClick = {},
                 onPauseAnimationClick = {},
                 onStartAnimationClick = {},
