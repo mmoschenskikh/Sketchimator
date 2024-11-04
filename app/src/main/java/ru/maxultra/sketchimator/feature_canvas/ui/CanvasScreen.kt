@@ -36,6 +36,7 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
                     onRedoActionClick = viewModel::onRedoActionClick,
                     onRemoveFrameClick = viewModel::onRemoveFrameClick,
                     onAddNewFrameClick = viewModel::onAddNewFrameClick,
+                    onCopyCurrentFrameClick = viewModel::onCopyCurrentFrameClick,
                     onOpenFrameListClick = viewModel::onOpenFrameListClick,
                     onPauseAnimationClick = viewModel::onPauseAnimationClick,
                     onStartAnimationClick = viewModel::onStartAnimationClick,

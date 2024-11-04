@@ -1,14 +1,24 @@
 package ru.maxultra.sketchimator.feature_canvas.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import ru.maxultra.sketchimator.R
 import ru.maxultra.sketchimator.core_ui.core_components.ButtonSize
 import ru.maxultra.sketchimator.core_ui.core_components.IconButton
@@ -25,6 +35,7 @@ fun TopBar(
     listener: TopBarListener,
     modifier: Modifier = Modifier,
 ) {
+    var showDropdownMenu by remember { mutableStateOf(false) }
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -58,11 +69,34 @@ fun TopBar(
                     onClick = listener.onRemoveFrameClick,
                     enabled = vm.removeFrameButtonEnabled,
                 )
-                IconButton(
-                    icon = R.drawable.ic_file_plus_32,
-                    onClick = listener.onAddNewFrameClick,
-                    enabled = vm.addNewFrameButtonEnabled,
-                )
+                Box {
+                    IconButton(
+                        icon = R.drawable.ic_file_plus_32,
+                        onClick = { showDropdownMenu = true },
+                        enabled = vm.addNewFrameButtonEnabled,
+                    )
+                    DropdownMenu(
+                        modifier = Modifier
+                            .background(SketchimatorTheme.colorScheme.background),
+                        expanded = showDropdownMenu,
+                        onDismissRequest = { showDropdownMenu = false },
+                    ) {
+                        AddFrameDropdownItem(
+                            text = stringResource(R.string.add_new_frame),
+                            onClick = {
+                                listener.onAddNewFrameClick.invoke();
+                                showDropdownMenu = false
+                            },
+                        )
+                        AddFrameDropdownItem(
+                            text = stringResource(R.string.copy_frame),
+                            onClick = {
+                                listener.onCopyCurrentFrameClick.invoke();
+                                showDropdownMenu = false
+                            },
+                        )
+                    }
+                }
                 IconButton(
                     icon = R.drawable.ic_layers_32,
                     onClick = listener.onOpenFrameListClick,
@@ -87,6 +121,21 @@ fun TopBar(
     }
 }
 
+@Composable
+private fun AddFrameDropdownItem(
+    text: String,
+    onClick: () -> Unit,
+) {
+    DropdownMenuItem(
+        onClick = onClick,
+    ) {
+        Text(
+            color = SketchimatorTheme.colorScheme.onBackground,
+            text = text,
+        )
+    }
+}
+
 @DayNightPreview
 @Composable
 private fun TopBarPreview() {
@@ -106,6 +155,7 @@ private fun TopBarPreview() {
                 onRedoActionClick = {},
                 onRemoveFrameClick = {},
                 onAddNewFrameClick = {},
+                onCopyCurrentFrameClick = {},
                 onOpenFrameListClick = {},
                 onPauseAnimationClick = {},
                 onStartAnimationClick = {},

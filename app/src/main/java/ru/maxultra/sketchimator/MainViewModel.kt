@@ -127,6 +127,14 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun onCopyCurrentFrameClick() {
+        _appState.update { currentState ->
+            currentState.copy(
+                frames = currentState.frames + currentState.currentFrame,
+            )
+        }
+    }
+
     fun onOpenFrameListClick() {
         _appState.update { currentState ->
             currentState.copy(
