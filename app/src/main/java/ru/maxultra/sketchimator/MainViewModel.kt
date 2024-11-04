@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import ru.maxultra.sketchimator.feature_canvas.ui.vm.DrawingTool
+import ru.maxultra.sketchimator.util.FrameRateUtils
 
 class MainViewModel : ViewModel() {
 
@@ -173,7 +174,7 @@ class MainViewModel : ViewModel() {
                 state.frames.forEach { frame ->
                     _currentFrameDrawnPaths.clear()
                     _currentFrameDrawnPaths.addAll(frame.drawnPaths)
-                    delay(state.frameTimeMs)
+                    delay(currentState.frameTimeMs)
                 }
             }
         }
@@ -253,6 +254,18 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun onFrameRateChanged(fps: Float) {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    frameTimeMs = FrameRateUtils.fpsToFrameTimeMs(fps = fps),
+                )
+            )
+        }
+    }
+
     private fun clearUndonePaths() {
         _appState.update { currentState ->
             currentState.copyWithCurrentFrameChanged { currentFrame ->
@@ -296,7 +309,7 @@ val AppState.isPlaying: Boolean
     get() = (currentScreen as? SketchimatorScreen.Canvas)?.isPlaying ?: false
 
 val AppState.frameTimeMs: Long
-    get() = (currentScreen as? SketchimatorScreen.Canvas)?.frameTimeMs ?: DEFAULT_FRAME_TIME_MS
+    get() = (currentScreen as? SketchimatorScreen.Canvas)?.frameTimeMs ?: FrameRateUtils.DEFAULT_FRAME_TIME_MS
 
 @Immutable
 data class Frame(
@@ -328,7 +341,7 @@ sealed class SketchimatorScreen {
         val previousDrawingTool: DrawingTool = DrawingTool.NONE,
         val showColorPalette: Boolean = false,
         val isPlaying: Boolean = false,
-        val frameTimeMs: Long = DEFAULT_FRAME_TIME_MS,
+        val frameTimeMs: Long = FrameRateUtils.DEFAULT_FRAME_TIME_MS,
     ) : SketchimatorScreen()
 
     @Immutable
@@ -336,4 +349,3 @@ sealed class SketchimatorScreen {
 }
 
 private const val PREVIOUS_COLORS_LIMIT = 4
-private const val DEFAULT_FRAME_TIME_MS = 100L

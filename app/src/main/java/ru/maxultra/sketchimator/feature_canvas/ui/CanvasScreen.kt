@@ -57,6 +57,7 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
                     onEraserClicked = { viewModel.onToolClicked(DrawingTool.ERASER) },
                     onColorPaletteClicked = { viewModel.onPaletteClicked() },
                     onColorSelected = { viewModel.onColorSelected(it) },
+                    onFrameRateChanged = { viewModel.onFrameRateChanged(it) },
                 ),
                 modifier = Modifier
                     .padding(

@@ -54,7 +54,7 @@ fun IconButton(
     contentDescription: String? = null,
 ) {
     androidx.compose.material3.IconButton(
-        modifier = modifier,
+        modifier = modifier.size(IconButtonDefaultSize),
         onClick = onClick,
         enabled = enabled,
     ) {
@@ -104,3 +104,5 @@ private fun IconButtonPreview() {
         }
     }
 }
+
+val IconButtonDefaultSize = DimenTokens.x10
