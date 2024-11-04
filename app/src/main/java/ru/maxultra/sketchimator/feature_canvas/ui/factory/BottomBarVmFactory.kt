@@ -7,6 +7,7 @@ import ru.maxultra.sketchimator.util.FrameRateUtils
 fun SketchimatorScreen.Canvas.toBottomBarVm(): BottomBarVm =
     if (isPlaying) {
         BottomBarVm.FrameRateControls(
+            showAnimationSettings = showAnimationSettings,
             frameRate = FrameRateUtils.frameTimeMsToFps(frameTimeMs),
         )
     } else {

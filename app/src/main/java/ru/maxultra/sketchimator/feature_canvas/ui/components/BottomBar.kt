@@ -2,25 +2,16 @@ package ru.maxultra.sketchimator.feature_canvas.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import ru.maxultra.sketchimator.R
 import ru.maxultra.sketchimator.core_ui.core_components.IconButton
-import ru.maxultra.sketchimator.core_ui.core_components.IconButtonDefaultSize
 import ru.maxultra.sketchimator.core_ui.core_components.Surface
 import ru.maxultra.sketchimator.core_ui.graphics.painter.OutlinedCircleColorPainter
 import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
@@ -95,34 +86,25 @@ private fun DrawingTools(vm: BottomBarVm.DrawingTools, listener: BottomBarListen
 
 @Composable
 private fun FrameRateControls(vm: BottomBarVm.FrameRateControls, listener: BottomBarListener) {
+    if (vm.showAnimationSettings) {
+        AnimationSettings(
+            frameRate = vm.frameRate,
+            onFrameRateChanged = listener.onFrameRateChanged,
+            onDismiss = listener.onDismissAnimationSettings,
+        )
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(DimenTokens.x2, Alignment.CenterHorizontally),
     ) {
-        Text(
-            text = stringResource(R.string.fps),
-        )
-        Spacer(Modifier.width(DimenTokens.x2))
-        Slider(
-            modifier = Modifier
-                .height(IconButtonDefaultSize)
-                .weight(0.9f),
-            value = vm.frameRate,
-            onValueChange = listener.onFrameRateChanged,
-            valueRange = 1f..30f,
-            steps = 28,
-            colors = SliderDefaults.colors(
-                thumbColor = SketchimatorTheme.colorScheme.onBackground,
-                inactiveTrackColor = Color.Transparent,
-                activeTrackColor = SketchimatorTheme.colorScheme.onBackground,
-                inactiveTickColor = SketchimatorTheme.colorScheme.onBackgroundSecondary,
-                activeTickColor = Color.Transparent,
-            ),
-        )
-        Text(
-            modifier = Modifier
-                .weight(0.1f, fill = true),
-            text = "${vm.frameRate.toInt()}",
-            textAlign = TextAlign.End,
+        IconButton(
+            icon = R.drawable.ic_display_settings_32,
+            onClick = listener.onAnimationSettingsClicked,
+            iconColor = if (vm.showAnimationSettings) {
+                SketchimatorTheme.colorScheme.highlight
+            } else {
+                SketchimatorTheme.colorScheme.onBackground
+            },
         )
     }
 }
@@ -143,6 +125,8 @@ private fun BottomBarDrawingToolsPreview() {
                 onEraserClicked = {},
                 onColorPaletteClicked = {},
                 onColorSelected = {},
+                onAnimationSettingsClicked = {},
+                onDismissAnimationSettings = {},
                 onFrameRateChanged = {},
             ),
         )
@@ -155,6 +139,7 @@ private fun BottomBarFrameRateControlsPreview() {
     SketchimatorTheme {
         BottomBar(
             vm = BottomBarVm.FrameRateControls(
+                showAnimationSettings = false,
                 frameRate = 10f,
             ),
             listener = BottomBarListener(
@@ -162,6 +147,8 @@ private fun BottomBarFrameRateControlsPreview() {
                 onEraserClicked = {},
                 onColorPaletteClicked = {},
                 onColorSelected = {},
+                onAnimationSettingsClicked = {},
+                onDismissAnimationSettings = {},
                 onFrameRateChanged = {},
             ),
         )

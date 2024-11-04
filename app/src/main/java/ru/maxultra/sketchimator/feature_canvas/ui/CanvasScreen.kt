@@ -57,6 +57,8 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
                     onEraserClicked = { viewModel.onToolClicked(DrawingTool.ERASER) },
                     onColorPaletteClicked = { viewModel.onPaletteClicked() },
                     onColorSelected = { viewModel.onColorSelected(it) },
+                    onAnimationSettingsClicked = { viewModel.onAnimationSettingsClicked() },
+                    onDismissAnimationSettings = { viewModel.onDismissAnimationSettings() },
                     onFrameRateChanged = { viewModel.onFrameRateChanged(it) },
                 ),
                 modifier = Modifier

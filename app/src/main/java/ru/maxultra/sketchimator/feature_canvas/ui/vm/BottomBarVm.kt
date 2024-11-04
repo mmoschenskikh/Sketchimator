@@ -15,6 +15,7 @@ sealed class BottomBarVm {
 
     @Immutable
     data class FrameRateControls(
+        val showAnimationSettings: Boolean,
         val frameRate: Float,
     ) : BottomBarVm()
 }
@@ -26,5 +27,7 @@ data class BottomBarListener(
     val onEraserClicked: () -> Unit,
     val onColorPaletteClicked: () -> Unit,
     val onColorSelected: (Color?) -> Unit,
+    val onAnimationSettingsClicked: () -> Unit,
+    val onDismissAnimationSettings: () -> Unit,
     val onFrameRateChanged: (fps: Float) -> Unit,
 )

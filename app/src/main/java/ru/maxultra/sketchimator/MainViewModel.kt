@@ -254,6 +254,30 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun onAnimationSettingsClicked() {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    showAnimationSettings = true,
+                )
+            )
+        }
+    }
+
+    fun onDismissAnimationSettings() {
+        _appState.update { currentState ->
+            val screenStack = currentState.screenStack
+            val canvas = screenStack.last() as SketchimatorScreen.Canvas
+            currentState.copy(
+                screenStack = screenStack.dropLast(1) + canvas.copy(
+                    showAnimationSettings = false,
+                )
+            )
+        }
+    }
+
     fun onFrameRateChanged(fps: Float) {
         _appState.update { currentState ->
             val screenStack = currentState.screenStack
@@ -339,6 +363,7 @@ sealed class SketchimatorScreen {
         val parameters: DrawParameters,
         val previousColors: List<Color>,
         val previousDrawingTool: DrawingTool = DrawingTool.NONE,
+        val showAnimationSettings: Boolean = false,
         val showColorPalette: Boolean = false,
         val isPlaying: Boolean = false,
         val frameTimeMs: Long = FrameRateUtils.DEFAULT_FRAME_TIME_MS,

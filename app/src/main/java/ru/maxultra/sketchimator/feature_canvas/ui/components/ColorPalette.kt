@@ -32,7 +32,7 @@ fun ColorPalette(
     modifier: Modifier = Modifier,
 ) {
     val yOffset = with(LocalDensity.current) {
-        DimenTokens.x16.toPx() + WindowInsets.systemBars.getBottom(this)
+        DimenTokens.x20.toPx() + WindowInsets.systemBars.getBottom(this)
     }.toInt().unaryMinus()
     var showColorPickerDialog by remember { mutableStateOf(false) }
     if (showColorPickerDialog) {
@@ -66,7 +66,6 @@ fun ColorPalette(
                 }
             }
         }
-
     }
 }
 
