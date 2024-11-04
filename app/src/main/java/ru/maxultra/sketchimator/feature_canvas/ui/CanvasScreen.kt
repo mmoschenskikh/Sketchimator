@@ -70,6 +70,7 @@ fun CanvasScreen(viewModel: MainViewModel = viewModel()) {
         CanvasWithBackground(
             innerPadding = innerPadding,
             drawParameters = screen.parameters,
+            currentFrameNumber = state.frames.size.takeIf { state.isPlaying.not() },
             currentFramePaths = viewModel.currentFrameDrawnPaths,
             previousFramePaths = state.previousFrame?.drawnPaths?.takeIf { state.isPlaying.not() },
             onPathAdded = viewModel::onPathDrawn,

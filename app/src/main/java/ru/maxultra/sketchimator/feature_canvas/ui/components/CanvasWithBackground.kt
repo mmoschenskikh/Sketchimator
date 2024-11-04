@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Path
@@ -18,12 +20,14 @@ import ru.maxultra.sketchimator.R
 import ru.maxultra.sketchimator.core_ui.core_components.Surface
 import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
 import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
+import ru.maxultra.sketchimator.core_ui.theme.tokens.PaletteTokens
 
 @Composable
 fun CanvasWithBackground(
     innerPadding: PaddingValues,
     @DrawableRes background: Int = R.drawable.background,
     drawParameters: DrawParameters,
+    currentFrameNumber: Int?,
     currentFramePaths: List<PathWithParameters>,
     previousFramePaths: List<PathWithParameters>? = null,
     onPathAdded: (Path) -> Unit,
@@ -33,6 +37,7 @@ fun CanvasWithBackground(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
+            contentAlignment = Alignment.BottomStart
         ) {
             Image(
                 modifier = Modifier
@@ -53,6 +58,13 @@ fun CanvasWithBackground(
                     .padding(DimenTokens.x4)
                     .clip(SketchimatorTheme.shapes.extraLarge),
             )
+            if (currentFrameNumber != null) {
+                Text(
+                    modifier = Modifier.padding(DimenTokens.x6),
+                    color = PaletteTokens.Black,
+                    text = currentFrameNumber.toString(),
+                )
+            }
         }
     }
 }
