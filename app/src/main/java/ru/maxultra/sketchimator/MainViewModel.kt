@@ -118,18 +118,20 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun onRemoveFrameClick() {
+    fun onRemoveFrameClick(index: Int = currentState.currentFrameIndex) {
         _appState.update { currentState ->
+            val newFrames = currentState.frames
+                .toMutableList()
+                .apply { removeAt(index) }
+                .toList()
+
             currentState.copy(
-                frames = currentState.frames.dropLast(1),
+                frames = newFrames,
+                currentFrameIndex = (index - 1).coerceIn(0, newFrames.lastIndex),
             )
         }
         _currentFrameDrawnPaths.clear()
         _currentFrameDrawnPaths.addAll(appState.value.currentFrame.drawnPaths)
-    }
-
-    fun onRemoveFrameClick(index: Int) {
-        // TODO
     }
 
     fun onRemoveAllFramesClick() {
@@ -141,6 +143,7 @@ class MainViewModel : ViewModel() {
                         undonePaths = emptyList(),
                     )
                 ),
+                currentFrameIndex = 0,
             )
         }
         _currentFrameDrawnPaths.clear()
@@ -149,11 +152,23 @@ class MainViewModel : ViewModel() {
     fun onAddNewFrameClick() {
         _currentFrameDrawnPaths.clear()
         _appState.update { currentState ->
+            val newIndex = currentState.currentFrameIndex + 1
+            val newFrames = currentState.frames
+                .toMutableList()
+                .apply {
+                    add(
+                        index = newIndex,
+                        element = Frame(
+                            drawnPaths = emptyList(),
+                            undonePaths = emptyList(),
+                        )
+                    )
+                }
+                .toList()
+
             currentState.copy(
-                frames = currentState.frames + Frame(
-                    drawnPaths = emptyList(),
-                    undonePaths = emptyList(),
-                ),
+                frames = newFrames,
+                currentFrameIndex = newIndex,
             )
         }
     }
@@ -188,19 +203,33 @@ class MainViewModel : ViewModel() {
 
             val generatedFrames = generator?.generate(frameCount) ?: emptyList()
 
+            val newFrames = currentState.frames + generatedFrames
             currentState.copy(
-                frames = currentState.frames + generatedFrames,
+                frames = newFrames,
                 screenStack = screenStack.dropLast(1) + canvas.copy(
                     showFrameGenerationDialog = false,
-                )
+                ),
+                currentFrameIndex = newFrames.lastIndex,
             )
         }
     }
 
     fun onCopyCurrentFrameClick() {
         _appState.update { currentState ->
+            val newIndex = currentState.currentFrameIndex + 1
+            val newFrames = currentState.frames
+                .toMutableList()
+                .apply {
+                    add(
+                        index = newIndex,
+                        element = currentState.currentFrame,
+                    )
+                }
+                .toList()
+
             currentState.copy(
-                frames = currentState.frames + currentState.currentFrame,
+                frames = newFrames,
+                currentFrameIndex = newIndex,
             )
         }
     }
@@ -400,7 +429,14 @@ class MainViewModel : ViewModel() {
     }
 
     fun onFrameChosen(index: Int) {
-        // TODO
+        _appState.update { currentState ->
+            currentState.copy(
+                screenStack = currentState.screenStack.dropLastWhile { it !is SketchimatorScreen.Canvas },
+                currentFrameIndex = index,
+            )
+        }
+        _currentFrameDrawnPaths.clear()
+        _currentFrameDrawnPaths.addAll(currentState.currentFrame.drawnPaths)
     }
 
     fun onActivityResume() {
@@ -428,7 +464,9 @@ data class AppState(
     val screenStack: List<SketchimatorScreen>,
     val frames: List<Frame>,
     val workingAreaSize: IntSize = IntSize(0, 0),
+    val currentFrameIndex: Int = 0,
 ) {
+
     val currentScreen: SketchimatorScreen
         get() = screenStack.last()
 
@@ -436,15 +474,15 @@ data class AppState(
         get() = screenStack.size > 1 || isPlaying
 
     val currentFrame: Frame
-        get() = frames.last()
+        get() = frames[currentFrameIndex]
 
     val previousFrame: Frame?
-        get() = if (frames.size > 1) frames[frames.lastIndex - 1] else null
+        get() = if (currentFrameIndex > 0) frames[currentFrameIndex - 1] else null
 
     fun copyWithCurrentFrameChanged(block: (currentFrame: Frame) -> Frame): AppState {
         return copy(
             frames = frames.mapIndexed { index, frame ->
-                if (index == frames.lastIndex) {
+                if (index == currentFrameIndex) {
                     block(frame)
                 } else {
                     frame

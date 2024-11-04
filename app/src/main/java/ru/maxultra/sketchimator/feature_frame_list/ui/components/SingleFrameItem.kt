@@ -144,4 +144,4 @@ private fun SingleFrameItemPreview() {
 }
 
 val FRAME_PREVIEW_WIDTH = DimenTokens.x44
-private const val ENABLE_ADDITIONAL_CONTROLS_FOR_FRAME_LIST = false
+private const val ENABLE_ADDITIONAL_CONTROLS_FOR_FRAME_LIST = true
