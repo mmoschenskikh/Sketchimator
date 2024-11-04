@@ -8,4 +8,7 @@
     <string name="copy_frame">Copy current frame</string>
     <string name="fps">FPS</string>
     <string name="width_px">Width (px)</string>
+    <string name="frame_count">Frame count: %1$d</string>
+    <string name="remove_all">Remove all frames</string>
+    <string name="frame_number">#%1$d</string>
 </resources>

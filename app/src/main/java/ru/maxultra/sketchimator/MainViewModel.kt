@@ -129,6 +129,20 @@ class MainViewModel : ViewModel() {
         // TODO
     }
 
+    fun onRemoveAllFramesClick() {
+        _appState.update { currentState ->
+            currentState.copy(
+                frames = listOf(
+                    Frame(
+                        drawnPaths = emptyList(),
+                        undonePaths = emptyList(),
+                    )
+                ),
+            )
+        }
+        _currentFrameDrawnPaths.clear()
+    }
+
     fun onAddNewFrameClick() {
         _currentFrameDrawnPaths.clear()
         _appState.update { currentState ->

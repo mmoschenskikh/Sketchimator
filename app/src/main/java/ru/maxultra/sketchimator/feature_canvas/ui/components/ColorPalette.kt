@@ -22,6 +22,7 @@ import ru.maxultra.sketchimator.core_ui.core_components.Surface
 import ru.maxultra.sketchimator.core_ui.graphics.painter.OutlinedCircleColorPainter
 import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
 import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
+import ru.maxultra.sketchimator.core_ui.theme.tokens.PaletteTokens
 import ru.maxultra.sketchimator.core_ui.util.DayNightPreview
 
 @Composable
@@ -59,6 +60,7 @@ fun ColorPalette(
             ) {
                 IconButton(
                     icon = R.drawable.ic_palette_32,
+                    iconColor = PaletteTokens.White,
                     onClick = { showColorPickerDialog = true },
                 )
                 for (color in previousColors) {

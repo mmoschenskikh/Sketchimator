@@ -24,6 +24,7 @@ import ru.maxultra.sketchimator.core_ui.core_components.IconButtonDefaultSize
 import ru.maxultra.sketchimator.core_ui.core_components.Surface
 import ru.maxultra.sketchimator.core_ui.theme.SketchimatorTheme
 import ru.maxultra.sketchimator.core_ui.theme.tokens.DimenTokens
+import ru.maxultra.sketchimator.core_ui.theme.tokens.PaletteTokens
 
 @Composable
 fun BrushSettings(
@@ -51,6 +52,7 @@ fun BrushSettings(
             ) {
                 Text(
                     text = stringResource(R.string.width_px),
+                    color = PaletteTokens.White,
                 )
                 Spacer(Modifier.width(DimenTokens.x2))
                 Slider(
@@ -74,6 +76,7 @@ fun BrushSettings(
                         .weight(0.15f, fill = true),
                     text = "${width.toInt()}",
                     textAlign = TextAlign.End,
+                    color = PaletteTokens.White,
                 )
             }
         }

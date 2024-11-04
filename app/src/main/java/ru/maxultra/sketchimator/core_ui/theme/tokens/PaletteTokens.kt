@@ -13,4 +13,5 @@ object PaletteTokens {
 
     val AcidGreen = Color(0xFFA8DB10)
     val ForestGreen = Color(0xFF53800B)
+    val Red = Color(0xFFE60000)
 }
